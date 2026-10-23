@@ -30,7 +30,7 @@
 
 **Objetivo**: un proyecto Expo con expo-router que abre en el teléfono.
 
-- [ ] T01 Crear el proyecto con `npx create-expo-app@latest gestor-gastos --template blank-typescript` desde la raíz del repositorio y comprobar que `gestor-gastos/.gitignore` excluye `node_modules/`.
+- [x] T01 Crear el proyecto con `npx create-expo-app@latest gestor-gastos --template blank-typescript` desde la raíz del repositorio y comprobar que `gestor-gastos/.gitignore` excluye `node_modules/`.
   - **Verificar**: `cd gestor-gastos` + `npx expo start`, escanear el QR con Expo Go y ver la pantalla inicial de la plantilla. Sacar captura para `PROCESO.md` §4.3.
 - [ ] T02 Instalar y configurar expo-router siguiendo la guía de instalación manual de la documentación de Expo: `npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar`; en `package.json` poner `"main": "expo-router/entry"`; en `app.json` agregar `"scheme": "gestorgastos"`; borrar `App.tsx` e `index.ts`. Crear `app/_layout.tsx` con un `Stack` cuya pantalla `(tabs)` no muestre encabezado (`headerShown: false`), `app/(tabs)/_layout.tsx` con `Tabs` de dos pestañas (`index` con título "Gastos" y `resumen` con título "Resumen"), y `app/(tabs)/index.tsx` y `app/(tabs)/resumen.tsx` que solo muestren un texto con su nombre.
   - **Verificar**: en el teléfono se ven las dos pestañas y se puede pasar de una a otra.

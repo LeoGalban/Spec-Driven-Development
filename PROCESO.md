@@ -283,13 +283,65 @@ Spec Kit generó, en [`specs/001-gestor-gastos/`](specs/001-gestor-gastos/):
 ## 4. Setup del entorno
 
 ### 4.1 Creación del proyecto
-_(pendiente)_
+
+**Tarea T01.** Desde la raíz del repositorio:
+
+```powershell
+npx create-expo-app@latest gestor-gastos --template blank-typescript
+```
+
+- Se creó la carpeta [`gestor-gastos/`](gestor-gastos/) con **Expo SDK 58**, React Native 0.88,
+  React 19.3 y TypeScript 6.
+- Como el proyecto está dentro de un repositorio Git que ya existía, `create-expo-app` **no** creó
+  un repositorio nuevo adentro (así queda todo en un solo repo).
+- `.gitignore` ya excluye `node_modules/` y `.expo/`.
+
+**Sorpresa:** la plantilla de Expo ya trae dos archivos pensados para agentes de IA:
+- `gestor-gastos/AGENTS.md`: instrucciones de Expo para el agente. Lo más importante que dice es
+  *"Expo cambia en cada versión: no confíes en lo que recordás, leé la documentación de tu versión"*
+  y que siempre se instalen paquetes con `npx expo install` (elige versiones compatibles con el SDK).
+- `gestor-gastos/.claude/settings.json`: activa el plugin oficial de Expo para Claude Code (ver 4.2).
+
+Siguiendo ese consejo, antes de configurar la navegación (T02) leímos la guía de instalación de
+expo-router de la documentación actual de Expo (https://docs.expo.dev/router/installation/), que
+confirmó los pasos del plan.
+
+**Problema encontrado: "Project is incompatible with this version of Expo Go".**
+Al escanear el QR, el iPhone mostró ese error y la terminal decía *"The project you requested
+requires a newer version of Expo Go"*.
+- **Causa:** el proyecto usa Expo SDK 58 y la app Expo Go del teléfono era de una versión anterior.
+  Cada versión de Expo Go solo abre proyectos de su SDK.
+- **Cómo lo verificamos:** la API de Expo (`https://api.expo.dev/v2/versions/latest`) indicaba que
+  ya existía Expo Go 58.0.5 para iOS, o sea que el problema estaba en el teléfono y no en el
+  proyecto.
+- **Solución:** actualizar Expo Go desde la App Store. Después de actualizar, la terminal mostró
+  `iOS Bundled ... index.ts` y la app abrió en el teléfono.
+- **Plan B (no hizo falta):** si la App Store todavía no tuviera la versión nueva, se podía crear el
+  proyecto con el SDK anterior (57).
+
+**Problema 2: "Could not connect to development server".**
+Después de actualizar, la app empezó a cargar pero se cortó con ese error.
+- **Causas:**
+  1. Había **tres servidores de Expo** corriendo a la vez (puertos 8081, 8082 y 8083), porque se
+     ejecutó `npx expo start` varias veces sin cortar el anterior.
+  2. La red Wi-Fi donde trabajamos **no deja que los dispositivos se conecten entre sí** (la
+     computadora y el teléfono), algo común en redes públicas o de instituciones.
+- **Solución:** cerrar los tres servidores, dejar uno solo y usar el **modo túnel**:
+  ```powershell
+  npx expo start --tunnel
+  ```
+  Con `--tunnel` el teléfono se conecta a la computadora **a través de internet** (usando el servicio
+  ngrok) en vez de hacerlo directo por la red local. La primera vez pide instalar `@expo/ngrok`.
+- **Aprendizaje:** antes de volver a ejecutar `npx expo start`, cortar el anterior con `Ctrl + C`.
 
 ### 4.2 Skills encontradas e instaladas
 _(pendiente)_
 
 ### 4.3 Captura de la app base en el teléfono
-_(pendiente)_
+
+App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo túnel:
+
+<img src="capturas/01-app-base.png" alt="App base en el iPhone" width="250">
 
 ---
 
