@@ -177,7 +177,7 @@
 
 - [x] T26 [P] [H7] Crear `utils/periodos.ts` con `type Periodo = { desde, hasta, titulo }`, `periodoMes(mesesAtras)` (del día 1 al último día; título "Octubre 2026") y `periodoSemana(semanasAtras)` (de lunes a domingo; título "19/10 al 25/10"). En `utils/calculos.ts` agregar `totalEnPeriodo(gastos, periodo)` y cambiar `resumenPorCategoria(gastos, periodo)` para que sume los gastos con `desde <= fecha <= hasta`.
   - **Verificar**: `npx tsc --noEmit` sin errores y, en la computadora, períodos para fechas difíciles (1 de enero, domingo, semana que cruza dos meses) y totales iguales a la suma manual.
-- [ ] T27 [H7] En `app/(tabs)/resumen.tsx`: selector "Semana / Mes" (por defecto "Mes") y una fila con "‹", el título del período y "›" ("›" deshabilitado en el período actual). El encabezado muestra el total del período elegido; si el período no tiene gastos, "No hay gastos en este período" debajo del selector (sin ocultarlo).
+- [x] T27 [H7] En `app/(tabs)/resumen.tsx`: selector "Semana / Mes" (por defecto "Mes") y una fila con "‹", el título del período y "›" ("›" deshabilitado en el período actual). El encabezado muestra el total del período elegido; si el período no tiene gastos, "No hay gastos en este período" debajo del selector (sin ocultarlo).
   - **Verificar**: escenarios 14, 24 y 25 de [quickstart.md](quickstart.md).
 
 ---

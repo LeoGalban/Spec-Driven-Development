@@ -990,6 +990,25 @@ tarea **T23** a `tasks.md`.
   `totalDelMes`, la suma por categoría del mes anterior coincide con su total, y un período sin
   gastos da una lista vacía.
 
+### T27 — Resumen por semana y por mes (Historia 7)
+
+- **Prompt:** "listo" (continuar con la tarea T27 de `tasks.md`).
+- **Qué hizo la IA:** reescribió [`app/(tabs)/resumen.tsx`](gestor-gastos/app/(tabs)/resumen.tsx):
+  - Dos estados nuevos: `tipo` (`'semana'` o `'mes'`, por defecto `'mes'`) y `cuantosAtras` (0 =
+    período actual). El período se **calcula** en cada dibujo con `periodoMes` o `periodoSemana`
+    (T26), así nunca queda desactualizado.
+  - Selector "Semana / Mes" (al cambiar vuelve al período actual) y flechas "‹ ›" con el título del
+    período en el medio; "›" se deshabilita en el período actual (FR-017).
+  - El encabezado muestra el total del período elegido. Si no tiene gastos aparece "No hay gastos
+    este mes" / "esta semana" / "en este período" dentro de una tarjeta, **sin ocultar** el selector
+    ni las flechas (así se puede seguir navegando).
+- **Decisiones que revisamos:** el período no se guarda en el estado porque se puede calcular a
+  partir de `tipo` y `cuantosAtras`; guardar datos que se pueden calcular es una fuente típica de
+  errores (quedan "viejos").
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` sin errores. En el teléfono:
+  escenarios 14, 24 y 25 de `quickstart.md`.
+
 ## Registro de prompts generales
 
 Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos
