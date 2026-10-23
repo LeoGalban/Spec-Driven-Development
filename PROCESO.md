@@ -633,6 +633,31 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   <img src="capturas/12-detalle-problema.png" alt="Detalle con el contenido tapado" width="250">
   <img src="capturas/12-detalle.png" alt="Detalle corregido" width="250">
 
+### T13 — Validación del formulario (`utils/validacion.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T13 de `tasks.md`; la tarea copia textualmente las
+  reglas y los mensajes de FR-006 / `data-model.md`).
+- **Qué hizo la IA:** creó [`utils/validacion.ts`](gestor-gastos/utils/validacion.ts) con
+  `validarGasto(valores)`, una función pura que devuelve un objeto con un mensaje por cada campo
+  con error (`{}` = se puede guardar). Cada campo tiene su función (`validarDescripcion`,
+  `validarMonto`, `validarFecha`) que devuelve el mensaje de la **primera** regla que falla, o
+  `null`.
+- **Decisiones que revisamos:**
+  - **Monto:** una expresión regular (`/^-?\d+([.,]\d+)?$/`) acepta números con coma o punto
+    decimal. Acepta el signo `-` para que `-5` diga "debe ser mayor a 0" (más claro que "no es un
+    número"). Un monto con separador de miles (`1.500,50`) **no** se acepta: así lo define
+    `data-model.md` (la coma o el punto es el decimal) y el mensaje "debe ser un número" lo indica.
+  - **Fecha real:** se crea un `Date` con día, mes y año, y se revisa si cambió. JavaScript
+    "acomoda" las fechas imposibles: el 31/02/2026 lo convierte en 03/03/2026; si cambió, la fecha
+    no existe. Esto también resuelve los años bisiestos sin código extra.
+  - **Fecha futura:** se compara como texto `AAAA-MM-DD` con `hoy()`, igual que en T09.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y **22 casos** en la computadora
+  (todos correctos), entre ellos los del escenario 8 de `quickstart.md`: descripción `"  ab "`,
+  montos `0`, `-5`, `abc`, `10,555` y `20000000`, fecha `31/02/2026`, fecha de mañana, nota de
+  201 caracteres; y los límites que sí valen: 50 caracteres, `10000000`, 200 caracteres de nota y
+  `29/02/2024` (año bisiesto). En el teléfono se ve en T16, cuando el formulario esté conectado.
+
 ---
 
 ## Registro de prompts generales

@@ -97,7 +97,7 @@
 
 **Prueba independiente**: escenarios 6–10 de [quickstart.md](quickstart.md).
 
-- [ ] T13 [P] [H3] Crear `utils/validacion.ts` con `validarGasto(valores: ValoresFormulario): ErroresFormulario`, función pura que aplica **en este orden** y devuelve **un solo mensaje por campo** (el de la primera regla que falla):
+- [x] T13 [P] [H3] Crear `utils/validacion.ts` con `validarGasto(valores: ValoresFormulario): ErroresFormulario`, función pura que aplica **en este orden** y devuelve **un solo mensaje por campo** (el de la primera regla que falla):
   - descripción (con `trim()`): vacía → "Escribí una descripción"; menos de 3 o más de 50 caracteres → "La descripción debe tener entre 3 y 50 caracteres".
   - monto: vacío → "Escribí el monto"; no es número (aceptando coma o punto decimal) → "El monto debe ser un número"; menor o igual a 0 → "El monto debe ser mayor a 0"; más de 2 decimales → "Usá como máximo 2 decimales"; mayor a 10.000.000 → "El monto máximo es $ 10.000.000".
   - categoría: `null` → "Elegí una categoría".
