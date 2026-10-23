@@ -753,6 +753,26 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   <img src="capturas/17-editar.png" alt="Formulario en modo edición" width="250">
   <img src="capturas/17-detalle-editado.png" alt="Detalle actualizado" width="250">
 
+### T18 — Eliminar un gasto (con confirmación)
+
+- **Prompt:** "listo" (continuar con la tarea T18 de `tasks.md`).
+- **Qué hizo la IA:** en [`app/gasto/[id].tsx`](gestor-gastos/app/gasto/[id].tsx) agregó el botón
+  "Eliminar" debajo de "Editar". Al tocarlo, `Alert.alert` muestra el aviso nativo "¿Eliminar este
+  gasto?" con "Cancelar" (`style: 'cancel'`) y "Eliminar" (`style: 'destructive'`, en rojo). Solo
+  "Eliminar" llama a `eliminarGasto(id)`; mientras tanto el botón dice "Eliminando…" y queda
+  deshabilitado, y al terminar vuelve a la lista con `router.back()`. Si el servicio falla, muestra
+  otro aviso con el error.
+- **Decisiones que revisamos:** "Eliminar" es blanco con borde y letras rojas (y no un botón lleno
+  como "Editar") para que no se confunda ni se toque por error.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos (escenarios 12 y 13 de `quickstart.md`):** con el gasto "Crossfit": al
+  tocar "Cancelar" el aviso se cierra y el gasto queda igual; al confirmar "Eliminar" se vuelve a la
+  lista y el gasto ya no aparece. El estado vacío (borrar todos) y "No se encontró el gasto" quedan
+  para la prueba completa de T21.
+
+  <img src="capturas/18-botones.png" alt="Botones Editar y Eliminar" width="250">
+  <img src="capturas/18-confirmacion.png" alt="Confirmación para eliminar" width="250">
+
 ---
 
 ## Registro de prompts generales

@@ -1,11 +1,11 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Cargando from '../../components/Cargando';
 import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
-import { obtenerGasto } from '../../services/gastos';
+import { eliminarGasto, obtenerGasto } from '../../services/gastos';
 import { Gasto } from '../../types/gasto';
 import { fechaAMostrar, formatearPesos } from '../../utils/formato';
 
@@ -16,6 +16,7 @@ export default function PantallaDetalle() {
   const [gasto, setGasto] = useState<Gasto | null>(null); // null = no existe
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [eliminando, setEliminando] = useState(false);
 
   const cargarGasto = useCallback(async () => {
     setCargando(true);
@@ -29,6 +30,25 @@ export default function PantallaDetalle() {
       setCargando(false);
     }
   }, [id]);
+
+  // Pide confirmación antes de borrar (FR-009). Si el usuario cancela, no pasa nada.
+  function confirmarEliminar() {
+    Alert.alert('¿Eliminar este gasto?', 'Esta acción no se puede deshacer.', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Eliminar', style: 'destructive', onPress: eliminar },
+    ]);
+  }
+
+  async function eliminar() {
+    setEliminando(true);
+    try {
+      await eliminarGasto(id);
+      router.back(); // vuelve a la lista, que se recarga sola y ya no lo muestra
+    } catch (e) {
+      Alert.alert('No se pudo eliminar', e instanceof Error ? e.message : 'Error desconocido');
+      setEliminando(false);
+    }
+  }
 
   // Se recarga cada vez que la pantalla vuelve a verse (por ejemplo, después de editarlo).
   useFocusEffect(
@@ -73,6 +93,16 @@ export default function PantallaDetalle() {
         onPress={() => router.push({ pathname: '/gasto/formulario', params: { id: gasto.id } })}
       >
         <Text style={styles.textoBoton}>Editar</Text>
+      </Pressable>
+
+      <Pressable
+        style={[styles.boton, styles.botonEliminar, eliminando && styles.botonDeshabilitado]}
+        onPress={confirmarEliminar}
+        disabled={eliminando}
+      >
+        <Text style={[styles.textoBoton, styles.textoEliminar]}>
+          {eliminando ? 'Eliminando…' : 'Eliminar'}
+        </Text>
       </Pressable>
     </ScrollView>
   );
@@ -136,5 +166,18 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 17,
     fontWeight: '600',
+  },
+  // "Eliminar" va en blanco con letras rojas, para que no se toque por error en vez de "Editar".
+  botonEliminar: {
+    marginTop: 12,
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#C62828',
+  },
+  textoEliminar: {
+    color: '#C62828',
+  },
+  botonDeshabilitado: {
+    opacity: 0.5,
   },
 });
