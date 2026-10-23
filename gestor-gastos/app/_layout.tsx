@@ -58,6 +58,7 @@ export default function LayoutRaiz() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="gasto/[id]" options={{ title: 'Detalle' }} />
         <Stack.Screen name="gasto/formulario" options={{ title: 'Nuevo gasto' }} />
+        <Stack.Screen name="categoria/nueva" options={{ title: 'Nueva categoría' }} />
       </Stack>
     </>
   );

@@ -10,13 +10,14 @@ import MensajeVacio from '../../components/MensajeVacio';
 import {
   colorSuave,
   COLORES,
-  ESTILO_CATEGORIA,
+  estiloDeCategoria,
   FUENTES,
   RADIO,
   SOMBRA,
 } from '../../constants/tema';
+import { obtenerCategorias } from '../../services/categorias';
 import { eliminarGasto, obtenerGasto } from '../../services/gastos';
-import { Gasto } from '../../types/gasto';
+import { EstiloCategoria, Gasto } from '../../types/gasto';
 import { fechaAMostrar, formatearPesos } from '../../utils/formato';
 
 // Pantalla 2: detalle de un gasto (Historia 2).
@@ -24,6 +25,7 @@ import { fechaAMostrar, formatearPesos } from '../../utils/formato';
 export default function PantallaDetalle() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const [gasto, setGasto] = useState<Gasto | null>(null); // null = no existe
+  const [estilo, setEstilo] = useState<EstiloCategoria | null>(null); // ícono y color de su categoría
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [eliminando, setEliminando] = useState(false);
@@ -32,7 +34,10 @@ export default function PantallaDetalle() {
     setCargando(true);
     setError(null);
     try {
-      setGasto(await obtenerGasto(id));
+      // Se piden el gasto y las categorías a la vez (Promise.all) para saber su ícono y color.
+      const [encontrado, categorias] = await Promise.all([obtenerGasto(id), obtenerCategorias()]);
+      setGasto(encontrado);
+      if (encontrado) setEstilo(estiloDeCategoria(encontrado.categoria, categorias));
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error desconocido');
     } finally {
@@ -73,7 +78,7 @@ export default function PantallaDetalle() {
   if (error) {
     return <MensajeError mensaje={error} alReintentar={cargarGasto} />;
   }
-  if (gasto === null) {
+  if (gasto === null || estilo === null) {
     return (
       <MensajeVacio
         mensaje="No se encontró el gasto"
@@ -82,8 +87,6 @@ export default function PantallaDetalle() {
       />
     );
   }
-
-  const { color } = ESTILO_CATEGORIA[gasto.categoria];
 
   return (
     // contentInsetAdjustmentBehavior="automatic": en iPhone el encabezado es transparente y
@@ -94,12 +97,12 @@ export default function PantallaDetalle() {
     >
       {/* Arriba: ícono grande, monto, descripción y la categoría en una "pastilla" de su color */}
       <View style={styles.cabecera}>
-        <IconoCategoria categoria={gasto.categoria} tamanio={64} />
+        <IconoCategoria estilo={estilo} tamanio={64} />
         <Text style={styles.monto} numberOfLines={1} adjustsFontSizeToFit>
           {formatearPesos(gasto.montoCentavos)}
         </Text>
         <Text style={styles.descripcion}>{gasto.descripcion}</Text>
-        <Text style={[styles.pastilla, { backgroundColor: colorSuave(color) }]}>
+        <Text style={[styles.pastilla, { backgroundColor: colorSuave(estilo.color) }]}>
           {gasto.categoria}
         </Text>
       </View>

@@ -1,12 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { COLORES, FUENTES, RADIO } from '../constants/tema';
-import { Gasto } from '../types/gasto';
+import { EstiloCategoria, Gasto } from '../types/gasto';
 import { formatearPesos } from '../utils/formato';
 import IconoCategoria from './IconoCategoria';
 
 type Props = {
   gasto: Gasto;
+  estilo: EstiloCategoria; // ícono y color de su categoría
   alPresionar: () => void;
   primero: boolean; // primer gasto del día: lleva las esquinas de arriba redondeadas
   ultimo: boolean; // último gasto del día: esquinas de abajo redondeadas y sin línea abajo
@@ -15,7 +16,7 @@ type Props = {
 // Una fila de la lista de gastos: ícono, descripción, categoría y monto (Historia 1).
 // Los gastos de un mismo día se ven juntos, como una sola tarjeta separada por líneas finas.
 // La fecha no va acá porque la lista la muestra en el título de cada día.
-export default function TarjetaGasto({ gasto, alPresionar, primero, ultimo }: Props) {
+export default function TarjetaGasto({ gasto, estilo, alPresionar, primero, ultimo }: Props) {
   return (
     <Pressable
       onPress={alPresionar}
@@ -30,7 +31,7 @@ export default function TarjetaGasto({ gasto, alPresionar, primero, ultimo }: Pr
         pressed && styles.presionada, // al tocarla se tiñe de verde clarito
       ]}
     >
-      <IconoCategoria categoria={gasto.categoria} />
+      <IconoCategoria estilo={estilo} />
       <View style={[styles.centro, !ultimo && styles.conLinea]}>
         <View style={styles.textos}>
           <Text style={styles.descripcion} numberOfLines={1}>

@@ -8,9 +8,10 @@ import Icono from '../../components/Icono';
 import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
 import TarjetaGasto from '../../components/TarjetaGasto';
-import { COLORES, FUENTES, RADIO } from '../../constants/tema';
+import { COLORES, estiloDeCategoria, FUENTES, RADIO } from '../../constants/tema';
+import { obtenerCategorias } from '../../services/categorias';
 import { obtenerGastos } from '../../services/gastos';
-import { Gasto } from '../../types/gasto';
+import { Gasto, InfoCategoria } from '../../types/gasto';
 import { agruparPorDia, totalDelMes } from '../../utils/calculos';
 import { fechaRelativa, formatearPesos, hoy, mesYAnio } from '../../utils/formato';
 
@@ -23,6 +24,7 @@ function irAAgregar() {
 export default function PantallaGastos() {
   // null = todavía no llegaron los datos (se muestra "Cargando…").
   const [gastos, setGastos] = useState<Gasto[] | null>(null);
+  const [categorias, setCategorias] = useState<InfoCategoria[]>([]); // para el ícono de cada gasto
   const [error, setError] = useState<string | null>(null);
   // true mientras se recarga con el gesto de deslizar hacia abajo.
   const [actualizando, setActualizando] = useState(false);
@@ -30,7 +32,14 @@ export default function PantallaGastos() {
   const cargarGastos = useCallback(async () => {
     setError(null);
     try {
-      setGastos(await obtenerGastos());
+      // Promise.all hace los dos pedidos a la vez y espera a que terminen los dos:
+      // así la espera no se duplica.
+      const [listaGastos, listaCategorias] = await Promise.all([
+        obtenerGastos(),
+        obtenerCategorias(),
+      ]);
+      setCategorias(listaCategorias);
+      setGastos(listaGastos);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error desconocido');
     }
@@ -106,6 +115,7 @@ export default function PantallaGastos() {
         // Al tocar un gasto se abre su detalle, por encima de las pestañas.
         <TarjetaGasto
           gasto={item}
+          estilo={estiloDeCategoria(item.categoria, categorias)}
           alPresionar={() => router.push(`/gasto/${item.id}`)}
           primero={index === 0}
           ultimo={index === section.data.length - 1}

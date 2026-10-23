@@ -1,4 +1,4 @@
-import { router, Stack, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { ReactNode, Ref, useCallback, useEffect, useRef, useState } from 'react';
 import {
   KeyboardTypeOptions,
@@ -17,8 +17,9 @@ import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
 import SelectorCategoria from '../../components/SelectorCategoria';
 import { COLORES, FUENTES, RADIO, SOMBRA } from '../../constants/tema';
+import { obtenerCategorias } from '../../services/categorias';
 import { actualizarGasto, crearGasto, obtenerGasto } from '../../services/gastos';
-import { DatosGasto, ErroresFormulario, ValoresFormulario } from '../../types/gasto';
+import { DatosGasto, ErroresFormulario, InfoCategoria, ValoresFormulario } from '../../types/gasto';
 import {
   ayer,
   centavosATexto,
@@ -51,6 +52,12 @@ export default function PantallaFormulario() {
   const [cargando, setCargando] = useState(esEdicion);
   const [errorAlCargar, setErrorAlCargar] = useState<string | null>(null);
   const [noEncontrado, setNoEncontrado] = useState(false);
+
+  // Categorías para elegir: se piden al servicio porque el usuario puede crear nuevas (FR-016).
+  const [categorias, setCategorias] = useState<InfoCategoria[] | null>(null); // null = cargando
+  const [errorCategorias, setErrorCategorias] = useState<string | null>(null);
+  // Cuántas categorías había la última vez: si al volver hay una más, es la que se acaba de crear.
+  const cantidadAnterior = useRef<number | null>(null);
 
   // useState recién cambia en el próximo dibujo de la pantalla; useRef cambia al instante.
   // Así, si se toca "Guardar" dos veces muy rápido, el segundo toque ya ve que se está guardando
@@ -86,6 +93,30 @@ export default function PantallaFormulario() {
       setCargando(false);
     }
   }, [esEdicion, id]);
+
+  const cargarCategorias = useCallback(async () => {
+    setErrorCategorias(null);
+    try {
+      const lista = await obtenerCategorias();
+      // Las categorías nuevas se agregan al final: si hay una más que antes, se elige esa.
+      if (cantidadAnterior.current !== null && lista.length > cantidadAnterior.current) {
+        const nueva = lista[lista.length - 1].nombre;
+        setValores((anteriores) => ({ ...anteriores, categoria: nueva }));
+      }
+      cantidadAnterior.current = lista.length;
+      setCategorias(lista);
+    } catch (e) {
+      setErrorCategorias(e instanceof Error ? e.message : 'Error desconocido');
+    }
+  }, []);
+
+  // Las categorías se recargan cada vez que se vuelve a esta pantalla (por ejemplo, al volver de
+  // "Nueva categoría"). Esto no borra lo que el usuario escribió: solo cambia la lista.
+  useFocusEffect(
+    useCallback(() => {
+      cargarCategorias();
+    }, [cargarCategorias]),
+  );
 
   // Se usa useEffect (una sola vez al abrir) y no useFocusEffect: si se recargara al volver a la
   // pantalla, se borraría lo que el usuario ya cambió.
@@ -211,10 +242,23 @@ export default function PantallaFormulario() {
         />
 
         <Text style={styles.etiqueta}>Categoría</Text>
-        <SelectorCategoria
-          valor={valores.categoria}
-          alCambiar={(categoria) => cambiar('categoria', categoria)}
-        />
+        {/* Mientras llegan las categorías se muestra un aviso chico, sin tapar el formulario */}
+        {errorCategorias ? (
+          <Pressable onPress={cargarCategorias} accessibilityRole="button">
+            <Text style={styles.error}>
+              No se pudieron cargar las categorías. Tocá acá para reintentar.
+            </Text>
+          </Pressable>
+        ) : categorias === null ? (
+          <Text style={styles.cargandoCategorias}>Cargando categorías…</Text>
+        ) : (
+          <SelectorCategoria
+            categorias={categorias}
+            valor={valores.categoria}
+            alCambiar={(categoria) => cambiar('categoria', categoria)}
+            alCrear={() => router.push('/categoria/nueva')}
+          />
+        )}
         {errores.categoria && <Text style={styles.error}>{errores.categoria}</Text>}
 
         <Campo
@@ -472,6 +516,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontFamily: FUENTES.media,
     color: COLORES.error,
+  },
+  cargandoCategorias: {
+    fontSize: 14,
+    fontFamily: FUENTES.regular,
+    color: COLORES.textoSecundario,
   },
   errorGeneral: {
     marginTop: 20,

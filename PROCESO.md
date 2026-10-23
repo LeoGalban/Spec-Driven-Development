@@ -948,6 +948,27 @@ tarea **T23** a `tasks.md`.
   "comida" y "MASCOTAS" (ya existen), "a" y uno de 21 letras (largo) y "" (vacío). Esta tarea no
   cambia nada visible: las pantallas se adaptan en T25.
 
+### T25 — Crear categorías desde la app (Historia 6)
+
+- **Prompt:** "listo" (continuar con la tarea T25 de `tasks.md`).
+- **Qué hizo la IA:**
+  - Nueva pantalla [`app/categoria/nueva.tsx`](gestor-gastos/app/categoria/nueva.tsx) ("Nueva
+    categoría"): vista previa en vivo, nombre, 6 colores, 8 íconos y "Crear categoría" (con
+    protección contra doble toque, igual que el formulario de gasto).
+  - `SelectorCategoria` recibe la lista de categorías y termina con el mosaico "Nueva".
+  - El formulario carga las categorías con `useFocusEffect` (con aviso de carga y de error) y, si
+    al volver hay una más que antes, elige la nueva.
+  - Lista, detalle y resumen piden gastos y categorías a la vez con `Promise.all`, y
+    `IconoCategoria` recibe el estilo (ícono y color) en vez del nombre.
+  - `resumenPorCategoria` ahora agrupa por el nombre de la categoría de cada gasto, así incluye las
+    creadas por el usuario.
+- **Decisiones que revisamos:** la pantalla nueva valida largo y vacío; el nombre repetido lo
+  detecta el servicio (que es quien conoce todas las categorías) y la pantalla muestra su mensaje.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` sin errores. En la computadora,
+  el resumen con una categoría creada ("Mascotas") suma exactamente el total del mes. En el
+  teléfono: escenarios 20–23 de `quickstart.md`.
+
 ## Registro de prompts generales
 
 Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos

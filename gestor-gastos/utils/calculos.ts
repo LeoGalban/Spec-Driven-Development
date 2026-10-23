@@ -1,4 +1,4 @@
-import { CATEGORIAS, Categoria, Gasto } from '../types/gasto';
+import { Categoria, Gasto } from '../types/gasto';
 import { hoy } from './formato';
 
 // Cálculos sobre la lista de gastos. Son funciones puras: no guardan ni leen datos,
@@ -30,26 +30,27 @@ export type ResumenCategoria = {
 };
 
 // Total y porcentaje por categoría del mes actual, de mayor a menor (FR-010).
-// Solo aparecen las categorías que tienen gastos este mes.
+// Agrupa por el nombre de la categoría de cada gasto, así sirve para las 6 fijas y para las que
+// crea el usuario. Solo aparecen las categorías que tienen gastos este mes.
 export function resumenPorCategoria(gastos: Gasto[]): ResumenCategoria[] {
   const mes = mesActual();
   const totalMes = totalDelMes(gastos);
   const resumen: ResumenCategoria[] = [];
 
-  for (const categoria of CATEGORIAS) {
-    let total = 0;
-    for (const gasto of gastos) {
-      if (gasto.categoria === categoria && gasto.fecha.startsWith(mes)) {
-        total += gasto.montoCentavos;
-      }
+  for (const gasto of gastos) {
+    if (!gasto.fecha.startsWith(mes)) continue; // solo los del mes
+    // ¿Ya hay una fila para esta categoría? Si no, se crea.
+    let fila = resumen.find((f) => f.categoria === gasto.categoria);
+    if (!fila) {
+      fila = { categoria: gasto.categoria, totalCentavos: 0, porcentaje: 0 };
+      resumen.push(fila);
     }
-    if (total > 0) {
-      resumen.push({
-        categoria,
-        totalCentavos: total,
-        porcentaje: Math.round((total * 100) / totalMes),
-      });
-    }
+    fila.totalCentavos += gasto.montoCentavos;
+  }
+
+  // Con los totales ya sumados se calcula qué parte del mes es cada categoría.
+  for (const fila of resumen) {
+    fila.porcentaje = Math.round((fila.totalCentavos * 100) / totalMes);
   }
 
   // sort con (a, b) => b - a ordena de mayor a menor.

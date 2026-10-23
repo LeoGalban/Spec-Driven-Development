@@ -7,9 +7,10 @@ import Encabezado from '../../components/Encabezado';
 import IconoCategoria from '../../components/IconoCategoria';
 import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
-import { COLORES, FUENTES, RADIO, SOMBRA } from '../../constants/tema';
+import { COLORES, estiloDeCategoria, FUENTES, RADIO, SOMBRA } from '../../constants/tema';
+import { obtenerCategorias } from '../../services/categorias';
 import { obtenerGastos } from '../../services/gastos';
-import { Gasto } from '../../types/gasto';
+import { Gasto, InfoCategoria } from '../../types/gasto';
 import { resumenPorCategoria, totalDelMes } from '../../utils/calculos';
 import { formatearPesos, hoy, mesYAnio } from '../../utils/formato';
 
@@ -18,6 +19,7 @@ import { formatearPesos, hoy, mesYAnio } from '../../utils/formato';
 export default function PantallaResumen() {
   // null = todavía no llegaron los datos (se muestra "Cargando…").
   const [gastos, setGastos] = useState<Gasto[] | null>(null);
+  const [categorias, setCategorias] = useState<InfoCategoria[]>([]); // para el ícono de cada fila
   const [error, setError] = useState<string | null>(null);
   // true mientras se recarga con el gesto de deslizar hacia abajo.
   const [actualizando, setActualizando] = useState(false);
@@ -25,7 +27,13 @@ export default function PantallaResumen() {
   const cargarGastos = useCallback(async () => {
     setError(null);
     try {
-      setGastos(await obtenerGastos());
+      // Promise.all hace los dos pedidos a la vez y espera a que terminen los dos.
+      const [listaGastos, listaCategorias] = await Promise.all([
+        obtenerGastos(),
+        obtenerCategorias(),
+      ]);
+      setCategorias(listaCategorias);
+      setGastos(listaGastos);
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Error desconocido');
     }
@@ -92,7 +100,7 @@ export default function PantallaResumen() {
             accessible
             accessibilityLabel={`${fila.categoria}: ${formatearPesos(fila.totalCentavos)}, ${fila.porcentaje} por ciento del total`}
           >
-            <IconoCategoria categoria={fila.categoria} />
+            <IconoCategoria estilo={estiloDeCategoria(fila.categoria, categorias)} />
             <View style={styles.centro}>
               <Text style={styles.categoria}>{fila.categoria}</Text>
               <Text style={styles.monto}>{formatearPesos(fila.totalCentavos)}</Text>
