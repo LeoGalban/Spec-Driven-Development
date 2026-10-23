@@ -349,7 +349,38 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
 > Por cada tarea: prompt utilizado, qué generó la IA, qué corregimos a mano y cómo lo verificamos.
 
-_(pendiente)_
+### T01 — Crear el proyecto Expo
+
+- **Prompt:** "listo" (continuar con la tarea T01 de `tasks.md`).
+- **Qué hizo la IA:** ejecutó `npx create-expo-app@latest gestor-gastos --template blank-typescript`
+  y revisó los archivos que creó la plantilla.
+- **Qué corregimos:** nada en el código. Hubo dos problemas al abrirla en el teléfono (Expo Go
+  desactualizado y la red Wi-Fi que bloquea conexiones locales), explicados en la sección 4.1.
+- **Cómo lo verificamos:** la app base abrió en el iPhone con Expo Go (captura en 4.3).
+
+### T02 — Navegación con expo-router (pestañas)
+
+- **Prompt:** "listo" (continuar con la tarea T02 de `tasks.md`).
+- **Qué hizo la IA:**
+  1. Leyó la guía de instalación de expo-router y la de pestañas en la documentación actual de
+     Expo (SDK 58), como pide el `AGENTS.md` de la plantilla.
+  2. Instaló las dependencias con `npx expo install expo-router react-native-safe-area-context
+     react-native-screens expo-linking expo-constants expo-status-bar` (se usa `npx expo install`
+     y no `npm install` porque elige versiones compatibles con el SDK).
+  3. Cambió en `package.json` el punto de entrada a `"main": "expo-router/entry"` y agregó
+     `"scheme": "gestorgastos"` en `app.json`.
+  4. Borró `App.tsx` e `index.ts` (con expo-router, la app arranca desde `app/_layout.tsx`).
+  5. Creó `app/_layout.tsx` (pila de pantallas), `app/(tabs)/_layout.tsx` (pestañas "Gastos" y
+     "Resumen") y dos pantallas provisorias: `app/(tabs)/index.tsx` y `app/(tabs)/resumen.tsx`.
+- **Qué corregimos / decidimos:** la documentación usa íconos de `@expo/vector-icons` en las
+  pestañas, pero esa librería no viene incluida en el proyecto. Para no agregar dependencias
+  (constitución, principio V) no les pusimos íconos: expo-router muestra un triángulo por defecto.
+  También agregamos `-c` al reiniciar Expo (`npx expo start --tunnel -c`) para borrar la caché,
+  porque cambió el archivo desde donde arranca la app.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores, `npx expo-doctor` (20/20 controles
+  correctos) y en el iPhone se ven las dos pestañas y se puede pasar de una a otra.
+
+  <img src="capturas/02-pestanias.png" alt="Pestañas Gastos y Resumen" width="250">
 
 ---
 
