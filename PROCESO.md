@@ -791,6 +791,26 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   $ 127.351,25, igual a `totalDelMes`. Con la lista vacía devuelve `[]`. En el teléfono se ve en
   T20.
 
+### T20 — Pantalla de resumen (`app/(tabs)/resumen.tsx`)
+
+- **Prompt:** "listo" (continuar con la tarea T20 de `tasks.md`).
+- **Qué hizo la IA:** reescribió [`app/(tabs)/resumen.tsx`](gestor-gastos/app/(tabs)/resumen.tsx)
+  con el mismo esquema que la lista (T11): carga los gastos con `obtenerGastos()` dentro de
+  `useFocusEffect`, muestra carga / error con "Reintentar" / "No hay gastos este mes" (si
+  `resumenPorCategoria` devuelve una lista vacía), y si hay datos: el total del mes arriba y una
+  fila por categoría con su total y su porcentaje.
+- **Decisiones que revisamos:** la pantalla no guarda datos propios: pide los mismos gastos que la
+  lista y los resume con la función de T19, así nunca puede "desincronizarse". No tiene gráficos
+  porque quedaron fuera de alcance en la spec (FR-010 pide totales y porcentajes). Se usa
+  `ScrollView` y `.map()` en vez de `FlatList` porque como máximo hay 6 filas.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos (escenarios 14 y 15 de `quickstart.md`):** se agregó un gasto de $ 45.000
+  en "Otros" y al volver a "Resumen" Otros pasó de $ 15.000 a **$ 60.000** y quedó primero
+  (35 %), el total pasó de $ 127.351,25 a **$ 172.351,25** y los porcentajes se recalcularon. La
+  suma de las 6 categorías coincide con el total del mes.
+
+  <img src="capturas/20-resumen.png" alt="Pantalla de resumen" width="250">
+
 ---
 
 ## Registro de prompts generales
