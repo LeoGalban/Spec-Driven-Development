@@ -3,16 +3,17 @@
 **Instituto Politécnico Formosa** · Taller Complementario – React Native II
 **Actividad áulica N.° 1:** Desarrollo de una app móvil con React Native, Expo y Spec-Driven Development
 
-**Integrante:** Leonel Galban (trabajo individual)
+**Integrante:**
+- Leonel Galban
 
-**Agente de IA utilizado:** Claude Code (extensión de VS Code)
+**Agente de IA utilizado:** Claude 
 **Herramienta SDD:** GitHub Spec Kit (`specify-cli` v1.2.4) con integración para Claude Code
 
 ---
 
 ## 1. Investigación
 
-> Respuestas con nuestras propias palabras, citando las fuentes consultadas. Los números entre corchetes [n] remiten a la lista de fuentes al final de la sección.
+> Cada número entre corchetes indica de qué fuente sacamos esa información [n].
 
 ### 1.1 React Native
 
@@ -267,4 +268,4 @@ _(pendiente)_
 
 ## 6. Conclusiones
 
-_(pendiente)_
+
