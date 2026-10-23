@@ -1,10 +1,25 @@
+import type { NombreIcono } from '../components/Icono';
+
 // Tipos de datos de la app (ver specs/001-gestor-gastos/data-model.md).
 
-// Las 6 categorías fijas (FR-007). Un gasto solo puede tener una de estas.
-export type Categoria = 'Comida' | 'Transporte' | 'Hogar' | 'Salud' | 'Ocio' | 'Otros';
+// Una categoría se identifica por su nombre: "Comida", o una creada por el usuario, como
+// "Mascotas" (FR-007 y FR-016). Por eso es un texto cualquiera y no una lista cerrada.
+export type Categoria = string;
 
-// La misma lista, pero como arreglo, para poder recorrerla y dibujar un botón por categoría.
+// Nombres de las 6 categorías fijas (FR-007), en el orden en que se muestran.
 export const CATEGORIAS: Categoria[] = ['Comida', 'Transporte', 'Hogar', 'Salud', 'Ocio', 'Otros'];
+
+// Cómo se dibuja una categoría: su ícono (con nombre para iPhone y para Android) y su color.
+export type EstiloCategoria = {
+  icono: NombreIcono;
+  color: string;
+};
+
+// Una categoría completa: nombre, estilo y si la creó el usuario (propia) o es de las 6 fijas.
+export type InfoCategoria = EstiloCategoria & {
+  nombre: Categoria;
+  propia: boolean;
+};
 
 // Un gasto tal como se guarda en el teléfono.
 export type Gasto = {

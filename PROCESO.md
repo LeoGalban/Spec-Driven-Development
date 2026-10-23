@@ -923,6 +923,31 @@ tarea **T23** a `tasks.md`.
 
   <img src="capturas/23-diseno-resumen.png" alt="Diseño final: pestaña Resumen" width="250">
 
+### T24 — Datos de las categorías (Historia 6)
+
+- **Prompt:** "listo" (continuar con la tarea T24 de `tasks.md`).
+- **Qué hizo la IA:**
+  - [`types/gasto.ts`](gestor-gastos/types/gasto.ts): `Categoria` pasa de una lista cerrada a
+    `string` (el nombre), y se agregan `EstiloCategoria` (ícono y color) e `InfoCategoria`
+    (nombre, estilo y si es `propia`).
+  - [`constants/tema.ts`](gestor-gastos/constants/tema.ts): `CATEGORIAS_FIJAS`, las opciones para
+    categorías nuevas (`COLORES_CATEGORIA`: 6 colores; `ICONOS_CATEGORIA`: 8 íconos) y
+    `estiloDeCategoria(nombre, categorias)`, que devuelve un ícono gris genérico si no la encuentra.
+  - [`services/categorias.ts`](gestor-gastos/services/categorias.ts): `obtenerCategorias()` (las
+    6 fijas + las creadas) y `crearCategoria(datos)`, con la misma demora y error simulados que
+    los gastos. Las creadas se guardan en AsyncStorage en la clave `categorias`.
+  - [`utils/validacion.ts`](gestor-gastos/utils/validacion.ts): `validarCategoria(nombre,
+    existentes)` con las 3 reglas de FR-016.
+- **Decisiones que revisamos:** `crearCategoria` vuelve a validar el nombre aunque la pantalla ya
+  lo haga: el servicio no confía en quien lo llama (como haría un servidor real). La comparación
+  de nombres es en minúsculas, así "comida" choca con "Comida".
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores (además confirma que los 8 nombres de
+  íconos existen en SF Symbols y Material). En la computadora, con un AsyncStorage simulado: al
+  inicio hay 6 categorías; se crea "  Mascotas " y queda guardada como "Mascotas"; se rechazan
+  "comida" y "MASCOTAS" (ya existen), "a" y uno de 21 letras (largo) y "" (vacío). Esta tarea no
+  cambia nada visible: las pantallas se adaptan en T25.
+
 ## Registro de prompts generales
 
 Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos

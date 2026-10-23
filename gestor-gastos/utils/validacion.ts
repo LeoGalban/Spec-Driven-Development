@@ -1,4 +1,4 @@
-import { ErroresFormulario, ValoresFormulario } from '../types/gasto';
+import { ErroresFormulario, InfoCategoria, ValoresFormulario } from '../types/gasto';
 import { fechaAGuardar, hoy, textoACentavos } from './formato';
 
 // Validación del formulario de gasto (FR-006). Función pura: recibe lo que escribió el usuario
@@ -74,5 +74,20 @@ function validarFecha(texto: string): string | null {
 
   // Las fechas "AAAA-MM-DD" se pueden comparar como texto.
   if (fechaAGuardar(limpio) > hoy()) return 'La fecha no puede ser futura';
+  return null;
+}
+
+// Validación del nombre de una categoría nueva (FR-016). Devuelve el mensaje de error o null.
+export function validarCategoria(nombre: string, existentes: InfoCategoria[]): string | null {
+  const limpio = nombre.trim();
+  if (limpio === '') return 'Escribí un nombre';
+  if (limpio.length < 2 || limpio.length > 20) {
+    return 'El nombre debe tener entre 2 y 20 caracteres';
+  }
+  // Se comparan en minúsculas: "comida" y "COMIDA" cuentan como "Comida".
+  const repetido = existentes.some(
+    (categoria) => categoria.nombre.toLowerCase() === limpio.toLowerCase(),
+  );
+  if (repetido) return 'Ya existe una categoría con ese nombre';
   return null;
 }

@@ -1,5 +1,5 @@
 import type { NombreIcono } from '../components/Icono';
-import { Categoria } from '../types/gasto';
+import { CATEGORIAS, EstiloCategoria, InfoCategoria } from '../types/gasto';
 
 // Sistema de diseño de la app (FR-015). Todos los colores, fuentes, tamaños e íconos salen de
 // acá: así la app se ve consistente y, si se quiere cambiar algo, se cambia en un solo lugar.
@@ -56,7 +56,7 @@ export const FONDO_PRINCIPAL = {
 
 // Ícono y color de cada categoría. El ícono tiene un nombre para iPhone (SF Symbols) y otro
 // para Android (Material Symbols), porque cada sistema tiene su propia colección.
-export const ESTILO_CATEGORIA: Record<Categoria, { icono: NombreIcono; color: string }> = {
+export const ESTILO_CATEGORIA: Record<string, EstiloCategoria> = {
   Comida: { icono: { ios: 'fork.knife', android: 'restaurant' }, color: '#E8890C' },
   Transporte: { icono: { ios: 'bus.fill', android: 'directions_bus' }, color: '#2F6FDB' },
   Hogar: { icono: { ios: 'house.fill', android: 'home' }, color: '#D93650' },
@@ -64,6 +64,38 @@ export const ESTILO_CATEGORIA: Record<Categoria, { icono: NombreIcono; color: st
   Ocio: { icono: { ios: 'popcorn.fill', android: 'movie' }, color: '#7A4FD8' },
   Otros: { icono: { ios: 'shippingbox.fill', android: 'inventory_2' }, color: '#5D6B7A' },
 };
+
+// Las 6 categorías fijas como InfoCategoria, en el orden de CATEGORIAS (FR-007).
+export const CATEGORIAS_FIJAS: InfoCategoria[] = CATEGORIAS.map((nombre) => ({
+  nombre,
+  ...ESTILO_CATEGORIA[nombre],
+  propia: false,
+}));
+
+// Opciones para las categorías que crea el usuario (FR-016): 6 colores y 8 íconos.
+export const COLORES_CATEGORIA = ['#0E9384', '#2F6FDB', '#7A4FD8', '#D93650', '#E8890C', '#4A8516'];
+
+export const ICONOS_CATEGORIA: NombreIcono[] = [
+  { ios: 'pawprint.fill', android: 'pets' },
+  { ios: 'graduationcap.fill', android: 'school' },
+  { ios: 'gift.fill', android: 'redeem' },
+  { ios: 'tshirt.fill', android: 'checkroom' },
+  { ios: 'dumbbell.fill', android: 'fitness_center' },
+  { ios: 'car.fill', android: 'directions_car' },
+  { ios: 'cart.fill', android: 'shopping_cart' },
+  { ios: 'heart.fill', android: 'favorite' },
+];
+
+// Estilo para una categoría que no se encuentra (por ejemplo, si se borraran los datos).
+const ESTILO_GENERICO: EstiloCategoria = {
+  icono: { ios: 'tag.fill', android: 'sell' },
+  color: '#5D6B7A',
+};
+
+// Busca el ícono y el color de una categoría por su nombre, entre las fijas y las creadas.
+export function estiloDeCategoria(nombre: string, categorias: InfoCategoria[]): EstiloCategoria {
+  return categorias.find((categoria) => categoria.nombre === nombre) ?? ESTILO_GENERICO;
+}
 
 // Agrega transparencia a un color "#RRGGBB": colorSuave('#E8890C') → '#E8890C1F'.
 // Los dos últimos dígitos son la opacidad en hexadecimal (1F ≈ 12 %).
