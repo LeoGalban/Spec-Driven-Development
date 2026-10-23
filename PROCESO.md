@@ -518,6 +518,25 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/07-servicio-gastos.png" alt="Gastos cargados: 12" width="250">
 
+### T08 — Componentes de estado (carga, vacío y error)
+
+- **Prompt:** "listo" (continuar con la tarea T08 de `tasks.md`).
+- **Qué hizo la IA:** creó tres componentes reutilizables en
+  [`gestor-gastos/components/`](gestor-gastos/components/), que usan todas las pantallas con
+  datos (constitución, principio IV):
+  - `Cargando.tsx`: ruedita (`ActivityIndicator`) + texto, por defecto "Cargando…".
+  - `MensajeVacio.tsx`: mensaje y, **opcionalmente**, un botón (solo se dibuja si recibe
+    `textoBoton` y `alPresionar`).
+  - `MensajeError.tsx`: "Algo salió mal", el mensaje del error y el botón "Reintentar".
+- **Decisiones que revisamos:** los botones son `Pressable` con estilo propio en vez del `Button`
+  de React Native, porque `Button` se ve distinto en iPhone y en Android y casi no se puede
+  personalizar.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y una prueba **temporal** en la pestaña
+  Resumen con los tres componentes juntos (después se dejó la pantalla como estaba):
+
+  <img src="capturas/08-componentes-estado.png" alt="Los tres estados" width="250">
+
 ---
 
 ## Registro de prompts generales
