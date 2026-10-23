@@ -551,6 +551,24 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   ejemplo: `totalDelMes` dio **$ 127.351,25**, igual a la suma manual de los 7 gastos del mes; con
   la lista vacía da 0 y con solo gastos del mes anterior da 0. En el teléfono se ve en T11.
 
+### T10 — Tarjeta de cada gasto (`components/TarjetaGasto.tsx`)
+
+- **Prompt:** "listo" (continuar con la tarea T10 de `tasks.md`).
+- **Qué hizo la IA:** creó [`components/TarjetaGasto.tsx`](gestor-gastos/components/TarjetaGasto.tsx):
+  una fila (`Pressable`) con la descripción y "categoría · fecha" a la izquierda y el monto a la
+  derecha, usando `fechaAMostrar` y `formatearPesos` de T05.
+- **Decisiones que revisamos:**
+  - `flexDirection: 'row'` para poner texto y monto lado a lado, y `flex: 1` en la parte izquierda
+    para que el monto quede siempre a la derecha.
+  - `numberOfLines={1}` en la descripción: si es muy larga se corta con "…" en vez de empujar el
+    monto.
+  - Al mantener apretada la tarjeta baja la opacidad, para que el usuario note que se puede tocar.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y una prueba **temporal** en la pestaña
+  Gastos con los 2 primeros gastos de ejemplo (después se borró):
+
+  <img src="capturas/10-tarjeta-gasto.png" alt="Tarjetas de gasto" width="250">
+
 ---
 
 ## Registro de prompts generales

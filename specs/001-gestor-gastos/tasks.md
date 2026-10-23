@@ -71,7 +71,7 @@
 
 - [x] T09 [P] [H1] Crear `utils/calculos.ts` con `totalDelMes(gastos: Gasto[]): number` que sume `montoCentavos` solo de los gastos cuya `fecha` empieza con el `AAAA-MM` de `hoy()` (FR-002).
   - **Verificar**: `npx tsc --noEmit` sin errores (se ve funcionando en T11).
-- [ ] T10 [P] [H1] Crear `components/TarjetaGasto.tsx`: recibe un `gasto` y `alPresionar`; muestra descripción, categoría, fecha con `fechaAMostrar` y monto con `formatearPesos`. Usa `Pressable`.
+- [x] T10 [P] [H1] Crear `components/TarjetaGasto.tsx`: recibe un `gasto` y `alPresionar`; muestra descripción, categoría, fecha con `fechaAMostrar` y monto con `formatearPesos`. Usa `Pressable`.
   - **Verificar**: `npx tsc --noEmit` sin errores (se ve en T11).
 - [ ] T11 [H1] Implementar `app/(tabs)/index.tsx`: carga con `obtenerGastos()` dentro de `useFocusEffect` (de `expo-router`); estados con `useState` para `gastos`, `cargando` y `error`; muestra `Cargando`, `MensajeError` (con "Reintentar" que vuelve a cargar) o `MensajeVacio` con "Todavía no cargaste gastos"; si hay datos, arriba el total del mes ("Total de este mes" + `formatearPesos(totalDelMes(gastos))`) y debajo una `FlatList` de `TarjetaGasto`.
   - **Verificar**: escenarios 1, 2, 3, 4 y 19 de [quickstart.md](quickstart.md).
