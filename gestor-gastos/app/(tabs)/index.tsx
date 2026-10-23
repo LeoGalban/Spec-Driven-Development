@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from 'react-native';
 
@@ -56,8 +56,8 @@ export default function PantallaGastos() {
         </View>
       }
       renderItem={({ item }) => (
-        // Por ahora tocar una tarjeta no hace nada: el detalle se agrega en T12.
-        <TarjetaGasto gasto={item} alPresionar={() => {}} />
+        // Al tocar una tarjeta se abre su detalle, por encima de las pestañas.
+        <TarjetaGasto gasto={item} alPresionar={() => router.push(`/gasto/${item.id}`)} />
       )}
       contentContainerStyle={styles.lista}
     />

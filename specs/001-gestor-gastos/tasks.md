@@ -86,7 +86,7 @@
 
 **Prueba independiente**: escenario 5 de [quickstart.md](quickstart.md).
 
-- [ ] T12 [H2] Crear `app/gasto/[id].tsx`: lee `id` con `useLocalSearchParams`, carga con `obtenerGasto(id)` en `useFocusEffect`; muestra `Cargando`, `MensajeError` con "Reintentar", o "No se encontró el gasto" con botón "Volver" (`router.back()`) si devuelve `null`; si existe, muestra descripción, monto, categoría, fecha y nota (solo si no está vacía). En `app/_layout.tsx` darle el título "Detalle". En `app/(tabs)/index.tsx` hacer que `TarjetaGasto` navegue con `router.push(`/gasto/${gasto.id}`)`.
+- [x] T12 [H2] Crear `app/gasto/[id].tsx`: lee `id` con `useLocalSearchParams`, carga con `obtenerGasto(id)` en `useFocusEffect`; muestra `Cargando`, `MensajeError` con "Reintentar", o "No se encontró el gasto" con botón "Volver" (`router.back()`) si devuelve `null`; si existe, muestra descripción, monto, categoría, fecha y nota (solo si no está vacía). En `app/_layout.tsx` darle el título "Detalle". En `app/(tabs)/index.tsx` hacer que `TarjetaGasto` navegue con `router.push(`/gasto/${gasto.id}`)`.
   - **Verificar**: escenario 5 de [quickstart.md](quickstart.md); el botón "Atrás" vuelve a la lista.
 
 ---

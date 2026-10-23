@@ -605,6 +605,34 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   commit `fix:` que lo vuelve a `0`. **Aprendizaje:** antes de cada commit, mirar `git status` y
   revisar que no se cuelen cambios de prueba.
 
+### T12 — Pantalla de detalle (`app/gasto/[id].tsx`)
+
+- **Prompt:** "listo" (continuar con la tarea T12 de `tasks.md`).
+- **Qué hizo la IA:**
+  - Creó [`app/gasto/[id].tsx`](gestor-gastos/app/gasto/[id].tsx). Los corchetes hacen que esa
+    parte de la ruta sea variable: `/gasto/ejemplo-3` abre el gasto con `id = "ejemplo-3"`, que se
+    lee con `useLocalSearchParams`. Carga el gasto con `obtenerGasto(id)` dentro de
+    `useFocusEffect` y muestra carga, error con "Reintentar", "No se encontró el gasto" con
+    "Volver" (si el servicio devuelve `null`) o los datos. La nota solo se muestra si tiene texto.
+  - En [`app/_layout.tsx`](gestor-gastos/app/_layout.tsx) le dio el título "Detalle" y puso
+    "Atrás" como texto del botón para volver.
+  - En la lista, tocar una tarjeta ahora hace `router.push(`/gasto/${id}`)`.
+- **Qué salió mal y qué corregimos:** en el iPhone, el monto y la descripción quedaban
+  **escondidos detrás del encabezado**, porque en las versiones nuevas de iOS el encabezado es
+  transparente y el contenido empieza debajo de él. Se corrigió agregando
+  `contentInsetAdjustmentBehavior="automatic"` al `ScrollView`, que le indica a iOS que deje el
+  espacio del encabezado. (La lista no tenía este problema porque el encabezado de las pestañas no
+  es transparente.)
+- **Cómo lo verificamos:** escenario 5 de `quickstart.md`: al tocar un gasto se abre el detalle
+  por encima de las pestañas, "Atrás" vuelve a la lista, el gasto con nota la muestra y el gasto
+  sin nota no muestra esa fila. "No se encontró el gasto" se prueba en T18 (todavía no se puede
+  borrar un gasto).
+
+  Antes y después de la corrección:
+
+  <img src="capturas/12-detalle-problema.png" alt="Detalle con el contenido tapado" width="250">
+  <img src="capturas/12-detalle.png" alt="Detalle corregido" width="250">
+
 ---
 
 ## Registro de prompts generales
