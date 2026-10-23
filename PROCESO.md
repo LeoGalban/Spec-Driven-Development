@@ -466,6 +466,29 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/05-prueba-formato.png" alt="Prueba de formato en el teléfono" width="250">
 
+### T06 — Simulación del servidor y datos de ejemplo
+
+- **Prompt:** "listo" (continuar con la tarea T06 de `tasks.md`).
+- **Qué hizo la IA:**
+  - [`services/simulacion.ts`](gestor-gastos/services/simulacion.ts): `esperar()` (una `Promise`
+    que se resuelve con `setTimeout` después de 500–1000 ms al azar), `PROBABILIDAD_ERROR = 0` y
+    `simularError()`, que lanza un error con esa probabilidad (para la demo del estado de error se
+    pone en `1`).
+  - [`services/datosEjemplo.ts`](gestor-gastos/services/datosEjemplo.ts): `crearDatosEjemplo()`
+    devuelve 12 gastos (7 del mes actual y 5 del anterior) con las 6 categorías y 2 con nota. Las
+    fechas se calculan a partir de hoy con `fechaDelMes(mesesAtras, dia)`.
+- **Qué corregimos / cambiamos:**
+  - Para armar las fechas hacía falta convertir un `Date` a `AAAA-MM-DD`, lo mismo que ya hacía
+    `hoy()`. En vez de copiar ese código, se separó en una función nueva `fechaATexto(fecha)` en
+    `utils/formato.ts` y `hoy()` ahora la usa.
+  - **Caso borde detectado al planificar las pruebas:** si hoy es el día 3 del mes, un gasto "del
+    día 15" sería una fecha futura (no permitida por la spec). Por eso en el mes actual el día se
+    limita a hoy, y en el mes anterior al último día de ese mes (por ejemplo, febrero tiene 28 o 29).
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores, y en la computadora se generaron los
+  datos simulando 4 fechas distintas como "hoy" (1/1/2027, 31/3/2027, 31/3/2028 —año bisiesto— y
+  23/10/2026). En todas: 12 gastos, 7 del mes actual, 0 fechas futuras, 6 categorías, ids sin
+  repetir. Esta tarea no cambia nada visible en el teléfono; se ve funcionando en T07.
+
 ---
 
 ## Registro de prompts generales

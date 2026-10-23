@@ -52,13 +52,17 @@ export function fechaAGuardar(fecha: string): string {
   return `${anio}-${mes}-${dia}`;
 }
 
-// Fecha de hoy según el reloj del teléfono, en formato "AAAA-MM-DD".
-// Se arma a mano (y no con toISOString) para usar la hora local y no la de Greenwich:
-// a las 22 h en Argentina, toISOString ya diría que es el día siguiente.
-export function hoy(): string {
-  const ahora = new Date();
-  const anio = ahora.getFullYear();
-  const mes = dosDigitos(ahora.getMonth() + 1); // getMonth() empieza en 0 (enero = 0)
-  const dia = dosDigitos(ahora.getDate());
+// Un Date de JavaScript → "AAAA-MM-DD", usando la hora local del teléfono.
+// Se arma a mano (y no con toISOString) porque toISOString usa la hora de Greenwich:
+// a las 22 h en Argentina ya diría que es el día siguiente.
+export function fechaATexto(fecha: Date): string {
+  const anio = fecha.getFullYear();
+  const mes = dosDigitos(fecha.getMonth() + 1); // getMonth() empieza en 0 (enero = 0)
+  const dia = dosDigitos(fecha.getDate());
   return `${anio}-${mes}-${dia}`;
+}
+
+// Fecha de hoy según el reloj del teléfono, en formato "AAAA-MM-DD".
+export function hoy(): string {
+  return fechaATexto(new Date());
 }
