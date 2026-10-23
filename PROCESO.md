@@ -444,6 +444,28 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 - **Cómo lo verificamos:** `npx tsc --noEmit` sin errores. Esta tarea no cambia nada visible: en el
   teléfono la app sigue abriendo igual.
 
+### T05 — Formato de pesos y fechas (`utils/formato.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T05 de `tasks.md`).
+- **Qué hizo la IA:** creó [`gestor-gastos/utils/formato.ts`](gestor-gastos/utils/formato.ts)
+  con 6 funciones puras: `formatearPesos` (`150050` → `$ 1.500,50`), `textoACentavos`
+  (`"1500,50"` → `150050`), `centavosATexto`, `fechaAMostrar` (`2026-10-23` → `23/10/2026`),
+  `fechaAGuardar` (al revés) y `hoy()`.
+- **Decisiones que revisamos:**
+  - `formatearPesos` pone los puntos de miles con un bucle simple en vez de `Intl.NumberFormat`
+    (su resultado cambia según el teléfono) o de una expresión regular (difícil de explicar).
+  - `textoACentavos` usa `Math.round` porque `1.1 * 100` da `110.00000000000001` en JavaScript.
+  - `hoy()` arma la fecha con la hora local; `toISOString()` usa la hora de Greenwich y después de
+    las 21 h en Argentina devolvería el día siguiente.
+- **Qué corregimos:** nada en las funciones.
+- **Cómo lo verificamos:**
+  1. En la computadora, 14 casos con resultado esperado (miles, millones, `$ 0,05`, coma y punto
+     decimal, `"1,1"` → `110`): todos correctos.
+  2. En el teléfono, una prueba **temporal** en la pantalla Gastos con 3 resultados (después se
+     borró, como indica la tarea):
+
+  <img src="capturas/05-prueba-formato.png" alt="Prueba de formato en el teléfono" width="250">
+
 ---
 
 ## Registro de prompts generales
