@@ -278,29 +278,6 @@ Spec Kit generó, en [`specs/001-gestor-gastos/`](specs/001-gestor-gastos/):
 > ✏️ **Revisión personal:** _(completar al leer `plan.md` y `tasks.md`: qué cambié a mano o qué
 > me pareció que sobraba o faltaba)._
 
-### 3.3 Ampliación del alcance durante el desarrollo (Historias 6 y 7)
-
-Con las 5 historias terminadas, pedí dos funciones nuevas:
-
-- **Prompt:** "quiero que hagas para que pueda agregar categoría, además pueda tener resúmenes
-  semanales y mensuales también".
-- **Qué señaló la IA:** las dos estaban **fuera de alcance** en la spec aprobada ("Categorías
-  personalizadas" figuraba en *Fuera de alcance* y FR-010 solo pedía el resumen del mes). Según
-  la consigna y la constitución (principio I), antes de programar hay que ampliar la spec y avisar
-  a los docentes.
-- **Qué se hizo (sin tocar código):**
-  - `spec.md`: nuevas **Historia 6** (crear categorías) e **Historia 7** (resumen por semana y por
-    mes) con sus escenarios de aceptación; nuevos **FR-016** y **FR-017**; cambian FR-006, FR-007
-    y FR-010; nueva pantalla 5 ("Nueva categoría"); casos borde nuevos (nombre repetido, semana que
-    cruza dos meses); en *Fuera de alcance* queda "editar o borrar categorías".
-  - `research.md` §14–17, `data-model.md`, `contracts/`, `plan.md` y `quickstart.md` (escenarios
-    20–25).
-  - `tasks.md`: tareas **T24–T25** (Historia 6) y **T26–T27** (Historia 7), antes del cierre.
-- **Decisiones:** la semana va de **lunes a domingo**; las categorías creadas se guardan en otra
-  clave de AsyncStorage y pasan por `services/`, como los gastos; solo se pueden **crear** (editar
-  o borrar quedó fuera de alcance para no agrandar demasiado el trabajo).
-- **Aviso a los docentes:** _(completar: fecha y respuesta de los docentes)._
-
 ---
 
 ## 4. Setup del entorno
@@ -874,163 +851,18 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
 ---
 
-### T23 — Diseño visual y experiencia de uso (FR-015, agregada durante el desarrollo)
-
-Esta tarea **no estaba en el plan original**: la pedí después de terminar las 5 historias. Siguiendo
-la constitución (principio I), antes de programar se agregó el requisito **FR-015** a la spec y la
-tarea **T23** a `tasks.md`.
-
-- **Prompts (en orden):** "Ahora quiero que la app la hagas atractiva" → "no quiero que uses emojis,
-  quiero que uses logos y uses un color, diseño y tipografía atractiva" → (imagen de una alcancía)
-  "Quiero que cuando escaneo el qr me aparezca el logo este" → "quiero que el diseño de toda la app
-  combine con ese logo y el logo también aparezca en las otras páginas" → "quiero que tenga más
-  verde que rosa" → "quiero otro diseño más atractivo con ese rosa y ese verde" → "quiero que sea
-  más atractivo para el usuario" → "quiero que el diseño ux/ui sea mejor" (elegí 4 mejoras de
-  experiencia de uso de una lista que me propuso la IA) → "las letras se ven muy grandes, la
-  tipografía ser otra más atractiva" → "una tipografía que llame la atención, también se ven muy
-  espaciados entre gastos" → "no me gusta el diseño visual en general, hacelo vos todo".
-- **Qué hizo la IA y qué fuimos corrigiendo (iteraciones):**
-  1. Primera versión con **emojis** como íconos → descartada: no se veían profesionales.
-  2. Íconos del sistema con `expo-symbols` (SF Symbols en iPhone) y tipografía Plus Jakarta Sans,
-     paleta violeta.
-  3. **Logo:** la IA recortó la imagen de la alcancía y generó el ícono (1024×1024), la pantalla de
-     inicio, el ícono de Android y una versión con fondo transparente. Descubrimos en la
-     documentación de SDK 58 que **Expo Go muestra el ícono** (no la pantalla de inicio) mientras
-     carga, así que el logo se configuró como ícono.
-  4. Paleta tomada del logo (rosa y verde), luego invertida a "más verde que rosa".
-  5. Mejoras de **experiencia de uso**: cursor en el monto, tecla "Siguiente", atajos "Hoy/Ayer",
-     deslizar para recargar, tarjetas "fantasma" al cargar y accesibilidad. La IA **midió el
-     contraste** de cada color con la fórmula WCAG y oscureció los que no llegaban a 4,5:1.
-  6. Tipografías probadas: Plus Jakarta Sans → Nunito → Fredoka + Nunito.
-  7. **Versión final**, rehecha desde cero como un *sistema de diseño* en
-     [`constants/tema.ts`](gestor-gastos/constants/tema.ts): verde bosque + lima del billete +
-     rosa de la alcancía, una sola tipografía (**Outfit**), radios y sombra comunes. Lista
-     agrupada por día ("Hoy", "Ayer", "Jueves 15 de octubre") con `SectionList`.
-- **Decisiones que revisamos:**
-  - Las librerías nuevas (`expo-symbols`, `expo-font`, `expo-splash-screen`,
-    `@expo-google-fonts/outfit`) contradicen en principio la regla "sin librerías extra"
-    (principio V). Se justificaron en el plan ("Seguimiento de complejidad"): íconos del sistema y
-    tipografías no se pueden hacer con React Native básico, y las 4 son oficiales de Expo e
-    incluidas en Expo Go.
-  - **Sin gráficos** en el resumen: siguen fuera de alcance en la spec.
-  - Las funciones nuevas de presentación (`agruparPorDia`, `fechaRelativa`, `ayer`, `mesYAnio`)
-    son puras y se probaron en la computadora.
-- **Qué aprendimos:** pedir "que sea más atractivo" sin decir qué no gusta llevó a muchas
-  vueltas. Funcionó mejor cuando la IA propuso opciones concretas para elegir y cuando definió un
-  sistema de diseño completo en vez de retocar de a partes.
-- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` (20/20) en cada iteración, y
-  capturas en el iPhone.
-
-  <img src="capturas/23-diseno-resumen.png" alt="Diseño final: pestaña Resumen" width="250">
-
-### T24 — Datos de las categorías (Historia 6)
-
-- **Prompt:** "listo" (continuar con la tarea T24 de `tasks.md`).
-- **Qué hizo la IA:**
-  - [`types/gasto.ts`](gestor-gastos/types/gasto.ts): `Categoria` pasa de una lista cerrada a
-    `string` (el nombre), y se agregan `EstiloCategoria` (ícono y color) e `InfoCategoria`
-    (nombre, estilo y si es `propia`).
-  - [`constants/tema.ts`](gestor-gastos/constants/tema.ts): `CATEGORIAS_FIJAS`, las opciones para
-    categorías nuevas (`COLORES_CATEGORIA`: 6 colores; `ICONOS_CATEGORIA`: 8 íconos) y
-    `estiloDeCategoria(nombre, categorias)`, que devuelve un ícono gris genérico si no la encuentra.
-  - [`services/categorias.ts`](gestor-gastos/services/categorias.ts): `obtenerCategorias()` (las
-    6 fijas + las creadas) y `crearCategoria(datos)`, con la misma demora y error simulados que
-    los gastos. Las creadas se guardan en AsyncStorage en la clave `categorias`.
-  - [`utils/validacion.ts`](gestor-gastos/utils/validacion.ts): `validarCategoria(nombre,
-    existentes)` con las 3 reglas de FR-016.
-- **Decisiones que revisamos:** `crearCategoria` vuelve a validar el nombre aunque la pantalla ya
-  lo haga: el servicio no confía en quien lo llama (como haría un servidor real). La comparación
-  de nombres es en minúsculas, así "comida" choca con "Comida".
-- **Qué corregimos:** nada.
-- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores (además confirma que los 8 nombres de
-  íconos existen en SF Symbols y Material). En la computadora, con un AsyncStorage simulado: al
-  inicio hay 6 categorías; se crea "  Mascotas " y queda guardada como "Mascotas"; se rechazan
-  "comida" y "MASCOTAS" (ya existen), "a" y uno de 21 letras (largo) y "" (vacío). Esta tarea no
-  cambia nada visible: las pantallas se adaptan en T25.
-
-### T25 — Crear categorías desde la app (Historia 6)
-
-- **Prompt:** "listo" (continuar con la tarea T25 de `tasks.md`).
-- **Qué hizo la IA:**
-  - Nueva pantalla [`app/categoria/nueva.tsx`](gestor-gastos/app/categoria/nueva.tsx) ("Nueva
-    categoría"): vista previa en vivo, nombre, 6 colores, 8 íconos y "Crear categoría" (con
-    protección contra doble toque, igual que el formulario de gasto).
-  - `SelectorCategoria` recibe la lista de categorías y termina con el mosaico "Nueva".
-  - El formulario carga las categorías con `useFocusEffect` (con aviso de carga y de error) y, si
-    al volver hay una más que antes, elige la nueva.
-  - Lista, detalle y resumen piden gastos y categorías a la vez con `Promise.all`, y
-    `IconoCategoria` recibe el estilo (ícono y color) en vez del nombre.
-  - `resumenPorCategoria` ahora agrupa por el nombre de la categoría de cada gasto, así incluye las
-    creadas por el usuario.
-- **Decisiones que revisamos:** la pantalla nueva valida largo y vacío; el nombre repetido lo
-  detecta el servicio (que es quien conoce todas las categorías) y la pantalla muestra su mensaje.
-- **Qué corregimos:** nada.
-- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` sin errores. En la computadora,
-  el resumen con una categoría creada ("Mascotas") suma exactamente el total del mes. En el
-  teléfono: escenarios 20–23 de `quickstart.md`.
-
-### T26 — Semanas y meses (`utils/periodos.ts`, Historia 7)
-
-- **Prompt:** "donde vea los resúmenes semanales y mensuales de las categorías" y después "listo".
-- **Qué hizo la IA:**
-  - [`utils/periodos.ts`](gestor-gastos/utils/periodos.ts): el tipo `Periodo` (`desde`, `hasta`,
-    `titulo`), `periodoMes(mesesAtras)`, `periodoSemana(semanasAtras)` (de lunes a domingo) y
-    `estaEnPeriodo(fecha, periodo)`.
-  - [`utils/calculos.ts`](gestor-gastos/utils/calculos.ts): `totalEnPeriodo(gastos, periodo)` y
-    `resumenPorCategoria(gastos, periodo)`, que ahora recibe el período. La pantalla de resumen
-    le pasa por ahora el mes actual (`periodoMes(0)`); el selector llega en T27.
-- **Decisiones que revisamos:** para encontrar el lunes se usa `(getDay() + 6) % 7`, que da
-  cuántos días pasaron desde el lunes (JavaScript cuenta el domingo como 0). Los cambios de mes y
-  de año los resuelve `new Date` solo (por ejemplo, el día 0 de un mes es el último del anterior).
-- **Qué corregimos:** nada.
-- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y, en la computadora, simulando distintas
-  fechas como "hoy": viernes 23/10 → semana 19/10 al 25/10; domingo 25/10 → misma semana; lunes
-  26/10 → 26/10 al 01/11 (cruza el mes); 1/1/2027 → 28/12 al 03/01 (cruza el año); marzo de 2028 →
-  el mes anterior termina el 29/02 (año bisiesto). El total del mes por período coincide con
-  `totalDelMes`, la suma por categoría del mes anterior coincide con su total, y un período sin
-  gastos da una lista vacía.
-
-### T27 — Resumen por semana y por mes (Historia 7)
-
-- **Prompt:** "listo" (continuar con la tarea T27 de `tasks.md`).
-- **Qué hizo la IA:** reescribió [`app/(tabs)/resumen.tsx`](gestor-gastos/app/(tabs)/resumen.tsx):
-  - Dos estados nuevos: `tipo` (`'semana'` o `'mes'`, por defecto `'mes'`) y `cuantosAtras` (0 =
-    período actual). El período se **calcula** en cada dibujo con `periodoMes` o `periodoSemana`
-    (T26), así nunca queda desactualizado.
-  - Selector "Semana / Mes" (al cambiar vuelve al período actual) y flechas "‹ ›" con el título del
-    período en el medio; "›" se deshabilita en el período actual (FR-017).
-  - El encabezado muestra el total del período elegido. Si no tiene gastos aparece "No hay gastos
-    este mes" / "esta semana" / "en este período" dentro de una tarjeta, **sin ocultar** el selector
-    ni las flechas (así se puede seguir navegando).
-- **Decisiones que revisamos:** el período no se guarda en el estado porque se puede calcular a
-  partir de `tipo` y `cuantosAtras`; guardar datos que se pueden calcular es una fuente típica de
-  errores (quedan "viejos").
-- **Qué corregimos:** nada.
-- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` sin errores. En el teléfono:
-  escenarios 14, 24 y 25 de `quickstart.md`.
-
 ## Registro de prompts generales
 
-Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos
-porque, a partir de la etapa 2, el contexto ya estaba escrito: con "listo" el agente tomaba la
-siguiente tarea de `tasks.md`, que dice qué archivo crear, qué reglas cumplir y cómo verificarlo,
-y además leía `AGENTS.md` y la constitución. **Esa es la idea de SDD:** las instrucciones
-detalladas viven en la spec, el plan y las tareas, y no hace falta repetirlas en cada mensaje.
+| Etapa | Prompt utilizado (a Claude Code) | Resultado |
+|---|---|---|
+| 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | La IA propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. |
+| 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | La IA redactó un borrador de la investigación con fuentes. Lo revisamos y reescribimos con nuestras palabras. |
+| 2 | "siguiente" (continuar con la etapa 2) + los prompts de la sección 2.3 | La IA instaló Spec Kit, escribió la constitución y generó la spec. |
+| 3 | "listo" (continuar con la etapa 3) + los prompts de la sección 3.1 | La IA generó el plan técnico, los documentos de diseño y las 22 tareas; corrigió la constitución a 1.0.1 por ser trabajo individual. |
+| 4 | "listo" + pedidos para resolver problemas ("soluciona eso", "ya actualicé") | La IA creó el proyecto Expo, configuró expo-router, escribió `AGENTS.md`/`CLAUDE.md` e instaló las skills de Expo. Resolvimos juntos: Expo Go desactualizado, red Wi-Fi que bloquea conexiones (modo túnel) y `/plugin` no disponible en VS Code. |
+| 5 | "listo" para pasar a cada tarea (T04–T20) | La IA implementó una tarea por vez, la probó en la computadora cuando se podía y pidió la prueba en el teléfono; las correcciones de cada tarea están en la sección 5. |
+| 5 | "corregí todo lo que tengas que hacer" | La IA revisó todo el código contra la spec, corrió los controles y completó la documentación pendiente (T21). |
 
-Igual, mirando para atrás, hay prompts que hoy escribiría mejor. Lo dejo en la última columna como
-aprendizaje.
-
-| Etapa | Prompt que usé | Qué hizo la IA | Cómo lo pediría mejor hoy |
-|---|---|---|---|
-| 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | Propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. | "Leé la consigna adjunta y proponé un plan por etapas. Quiero participar en cada paso y entender cada decisión, porque tengo que defenderla en forma oral." |
-| 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | Redactó un borrador de la investigación con fuentes, que revisé y corregí. | "Armá un borrador de la investigación con fuentes oficiales; yo lo reviso y lo reescribo con mis palabras. Avisame cuándo hacer cada commit." |
-| 1 | "quiero que sea fuentes reales, o sea que no sea de claude" | Abrió los 16 enlaces, corrigió uno roto, las apps mal citadas y agregó fuentes. | "Verificá que cada fuente exista y diga lo que citamos; corregí las que no." |
-| 2 | "siguiente" + los prompts de la sección 2.3 | Instaló Spec Kit, escribió la constitución y generó la spec. | (Los prompts de 2.3 ya eran completos.) |
-| 3 | "listo" + los prompts de la sección 3.1 | Generó el plan técnico, los documentos de diseño y las 22 tareas; ajustó la constitución a 1.0.1 por ser trabajo individual. | (Los prompts de 3.1 ya eran completos.) |
-| 4 | "listo", "soluciona eso" (con captura del error), "ya actualicé" | Creó el proyecto, configuró expo-router, escribió `AGENTS.md`/`CLAUDE.md` e instaló las skills de Expo. Resolvimos juntos: Expo Go desactualizado, la red Wi-Fi que bloquea conexiones (modo túnel) y `/plugin` no disponible en VS Code. | "Al escanear el QR, Expo Go muestra este error (adjunto captura). Explicame la causa y cómo lo soluciono." |
-| 5 | "listo" para pasar a cada tarea (T04–T20) | Implementó una tarea por vez, la probó en la computadora cuando se podía y me pidió la prueba en el teléfono; lo de cada tarea está en la sección 5. | "Hacé la tarea T07 de `tasks.md`. Antes de escribir el código, explicame qué vas a hacer; después decime cómo la pruebo en el teléfono." |
-| 5 | "corregí todo lo que tengas que hacerlo" | Revisó todo el código contra la spec, corrió los controles y completó la documentación pendiente (T21). | "Revisá todo el código contra la spec y el quickstart, corré los controles y decime qué falta probar en el teléfono." |
-
-## 6. Conclusiones
+---
 
 
