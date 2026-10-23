@@ -127,11 +127,66 @@ coinciden con la suma manual de los gastos del mes.
 
 ---
 
+### Historia 6 — Crear categorías propias (Prioridad: P3) *(agregada durante el desarrollo)*
+
+Como usuario, si ninguna de las 6 categorías me sirve (por ejemplo "Mascotas" o "Facultad"), creo
+una categoría nueva con su nombre, color e ícono, y la uso para mis gastos.
+
+**Por qué esta prioridad**: las 6 categorías fijas cubren lo básico; esto permite adaptar la app a
+cada persona.
+
+**Prueba independiente**: crear la categoría "Mascotas", cargar un gasto con ella y comprobar que
+aparece con su ícono y color en la lista, el detalle y el resumen.
+
+**Escenarios de aceptación**:
+
+1. **Dado** que estoy en el formulario de gasto, **cuando** toco "Nueva" en la lista de
+   categorías, **entonces** se abre la pantalla "Nueva categoría" con el nombre vacío y un color
+   y un ícono ya elegidos.
+2. **Dado** que escribo un nombre válido y elijo color e ícono, **cuando** toco "Crear",
+   **entonces** vuelvo al formulario con la nueva categoría ya elegida.
+3. **Dado** que el nombre está vacío, tiene menos de 2 o más de 20 caracteres, o ya existe otra
+   categoría con ese nombre (sin importar mayúsculas), **cuando** toco "Crear", **entonces** no
+   se crea y veo el mensaje que explica el error.
+4. **Dado** que creé una categoría, **cuando** cierro y vuelvo a abrir la app, **entonces** la
+   categoría sigue disponible.
+
+---
+
+### Historia 7 — Resumen por semana y por mes (Prioridad: P3) *(agregada durante el desarrollo)*
+
+Como usuario, en "Resumen" elijo ver la **semana** o el **mes**, y puedo ir hacia atrás para ver
+semanas o meses anteriores.
+
+**Por qué esta prioridad**: el resumen mensual (Historia 5) ya existe; ver la semana ayuda a
+controlar el gasto día a día y comparar con períodos anteriores.
+
+**Prueba independiente**: en "Resumen" cambiar a "Semana", comprobar que el total coincide con la
+suma de los gastos de lunes a domingo de esta semana, e ir a la semana anterior con "‹".
+
+**Escenarios de aceptación**:
+
+1. **Dado** que abro "Resumen", **cuando** se cargan los datos, **entonces** veo el resumen del
+   **mes actual** (como en la Historia 5) y un selector "Semana / Mes".
+2. **Dado** que elijo "Semana", **cuando** cambia la vista, **entonces** veo el total y el
+   detalle por categoría de la semana actual (de lunes a domingo) y el rango de fechas
+   ("20/10 al 26/10").
+3. **Dado** que toco "‹", **cuando** cambia el período, **entonces** veo la semana (o el mes)
+   anterior; con "›" vuelvo hacia adelante, pero nunca más allá del período actual.
+4. **Dado** que el período elegido no tiene gastos, **cuando** lo veo, **entonces** aparece "No
+   hay gastos en este período" y puedo seguir cambiando de período.
+
+---
+
 ### Casos borde
 
 - **Montos con decimales**: se aceptan hasta 2 decimales, usando coma o punto (`1500,50` o
   `1500.50`).
 - **Montos muy grandes**: el máximo permitido es $ 10.000.000 por gasto.
+- **Nombre de categoría repetido**: "comida" o "COMIDA" no se puede crear porque ya existe
+  "Comida".
+- **Semana que cruza dos meses** (por ejemplo, del 28/9 al 4/10): el resumen semanal incluye
+  los días de los dos meses.
 - **Fecha futura**: no se permite cargar un gasto con fecha posterior a hoy.
 - **Fecha inválida**: `31/02/2026` o texto que no sea una fecha muestra error.
 - **Descripción con solo espacios**: se considera vacía.
@@ -154,15 +209,16 @@ coinciden con la suma manual de los gastos del mes.
 - **FR-006**: El formulario MUST validar antes de guardar:
   - **Descripción**: obligatoria, entre 3 y 50 caracteres (sin contar espacios al inicio y al final).
   - **Monto**: obligatorio, número mayor a 0, como máximo 2 decimales y hasta 10.000.000.
-  - **Categoría**: obligatoria, una de la lista fija (FR-007).
+  - **Categoría**: obligatoria, una de las categorías existentes (FR-007).
   - **Fecha**: obligatoria, formato DD/MM/AAAA, fecha real y no posterior a hoy.
   - **Nota**: opcional, como máximo 200 caracteres.
-- **FR-007**: Las categorías son fijas: Comida, Transporte, Hogar, Salud, Ocio y Otros.
+- **FR-007**: Hay 6 categorías fijas (Comida, Transporte, Hogar, Salud, Ocio y Otros) que no se
+  pueden modificar, más las que cree el usuario (FR-016).
 - **FR-008**: La app MUST permitir editar un gasto existente usando el mismo formulario y las
   mismas validaciones.
 - **FR-009**: La app MUST permitir eliminar un gasto, pidiendo confirmación antes.
-- **FR-010**: La app MUST mostrar un resumen del mes actual con el total y el porcentaje por
-  categoría.
+- **FR-010**: La app MUST mostrar un resumen con el total y el porcentaje por categoría, del
+  **mes** o de la **semana** (de lunes a domingo) que elija el usuario (FR-017).
 - **FR-011**: Los cambios (alta, edición, eliminación) MUST conservarse al cerrar y volver a abrir
   la app.
 - **FR-012**: La primera vez que se abre la app, MUST mostrar un conjunto de gastos de ejemplo
@@ -179,6 +235,16 @@ coinciden con la suma manual de los gastos del mes.
   4,5:1 (WCAG). La app tiene logo propio (una alcancía) como ícono, pantalla de inicio, en el
   encabezado de todas las pantallas y en los estados vacíos, y se llama "Gestor de Gastos". Sin
   gráficos (siguen fuera de alcance).
+- **FR-016** *(agregado durante el desarrollo)*: El usuario MUST poder crear categorías con:
+  - **Nombre**: obligatorio, entre 2 y 20 caracteres (sin contar espacios al inicio y al final),
+    que no exista ya otra con el mismo nombre (sin importar mayúsculas).
+  - **Color**: uno de 6 colores de la app.
+  - **Ícono**: uno de 8 íconos de la app.
+  Las categorías creadas se guardan en el teléfono (como los gastos) y pasan por `services/` con
+  la misma demora simulada (FR-013).
+- **FR-017** *(agregado durante el desarrollo)*: El resumen MUST tener un selector "Semana / Mes"
+  y botones para ir al período anterior y al siguiente, sin pasar del período actual. Por defecto
+  muestra el mes actual.
 
 ### Pantallas
 
@@ -187,13 +253,15 @@ coinciden con la suma manual de los gastos del mes.
 | 1 | Lista de gastos | Total del mes + lista de gastos + botón "Agregar gasto" | Pestaña "Gastos" (inicio) |
 | 2 | Detalle del gasto | Todos los datos + botones "Editar" y "Eliminar" | Tocando un gasto de la lista |
 | 3 | Formulario de gasto | Campos con validación + "Guardar" (alta y edición) | "Agregar gasto" o "Editar" |
-| 4 | Resumen del mes | Total por categoría y porcentaje | Pestaña "Resumen" |
+| 4 | Resumen | Total por categoría y porcentaje, por semana o por mes | Pestaña "Resumen" |
+| 5 | Nueva categoría | Nombre, color e ícono + "Crear" | "Nueva" en las categorías del formulario |
 
 ### Entidades principales
 
 - **Gasto**: un pago realizado por el usuario. Tiene: identificador único, descripción, monto (en
   pesos), categoría, fecha y nota opcional.
-- **Categoría**: una de las 6 categorías fijas de FR-007. No se pueden crear ni editar.
+- **Categoría**: tiene nombre, color e ícono. Hay 6 fijas (FR-007) y el usuario puede crear más
+  (FR-016).
 
 ### Fuera de alcance
 
@@ -202,7 +270,7 @@ Para esta versión **no** se incluye:
 - Usuarios, inicio de sesión o cuentas.
 - Backend, sincronización en la nube o varios dispositivos.
 - Registro de ingresos, saldo o presupuestos.
-- Categorías personalizadas.
+- Editar o borrar categorías (solo se pueden crear).
 - Otras monedas además de pesos argentinos.
 - Gráficos (el resumen es una lista con totales y porcentajes).
 - Búsqueda, filtros u ordenamientos distintos al de fecha.

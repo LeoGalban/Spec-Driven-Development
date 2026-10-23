@@ -50,3 +50,14 @@ Cada fila es una prueba manual. Se considera aprobada si pasa lo de la columna "
 | 17 | H1, FR-003 | Eliminar todos los gastos | "Todavía no cargaste gastos" con botón para agregar; "Resumen" dice "No hay gastos este mes". |
 | 18 | FR-003 | Poner `PROBABILIDAD_ERROR = 1` en `services/simulacion.ts` y guardar | Las pantallas muestran el mensaje de error y "Reintentar". Volver a `0` y tocar "Reintentar": cargan bien. |
 | 19 | Casos borde | Agregar varios gastos y desplazar la lista | Se desplaza sin trabarse (`FlatList`). |
+
+## Escenarios agregados durante el desarrollo (H6 y H7)
+
+| # | Historia / requisito | Pasos | Resultado esperado |
+|---|---|---|---|
+| 20 | H6 | Formulario → "Nueva" → nombre "Mascotas", un color y un ícono → "Crear" | Vuelve al formulario con "Mascotas" elegida. |
+| 21 | H6, FR-016 | Intentar crear "comida", "a" y un nombre de 21 letras | Cada caso muestra su mensaje y no se crea. |
+| 22 | H6 | Guardar un gasto con "Mascotas" | Aparece con su ícono y color en la lista, el detalle y el resumen. |
+| 23 | H6, FR-011 | Cerrar Expo Go y volver a abrir | "Mascotas" sigue en las categorías. |
+| 24 | H7 | Resumen → "Semana" | Total y categorías de lunes a domingo de esta semana, con el rango de fechas. |
+| 25 | H7, FR-017 | Tocar "‹" y "›" en semana y en mes | Cambia el período; "›" no pasa del actual. Un período sin gastos dice "No hay gastos en este período". |

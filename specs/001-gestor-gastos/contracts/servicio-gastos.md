@@ -34,3 +34,17 @@ En `utils/`, porque son cálculos puros sobre datos que la pantalla ya tiene:
 | `resumenPorCategoria(gastos)` | `utils/calculos.ts` | `{ categoria, totalCentavos, porcentaje }[]` del mes actual, de mayor a menor. |
 | `validarGasto(valores)` | `utils/validacion.ts` | `ErroresFormulario` según FR-006. |
 | `formatearPesos`, `textoACentavos`, `centavosATexto`, `fechaAMostrar`, `fechaAGuardar`, `hoy` | `utils/formato.ts` | Conversiones del [modelo de datos](../data-model.md#conversiones). |
+
+## Agregado durante el desarrollo: `services/categorias.ts` (H6)
+
+Mismas reglas comunes (demora de 500–1000 ms y error simulado).
+
+| Función | Recibe | Devuelve | Comportamiento |
+|---|---|---|---|
+| `obtenerCategorias()` | — | `Promise<InfoCategoria[]>` | Las 6 fijas y después las creadas, en el orden en que se crearon. |
+| `crearCategoria(datos)` | `{ nombre, color, icono }` | `Promise<InfoCategoria>` | La guarda al final. Si el nombre ya existe, rechaza con `Error('Ya existe una categoría con ese nombre')`. |
+
+Funciones auxiliares nuevas (puras, sin demora): `validarCategoria` (`utils/validacion.ts`),
+`estiloDeCategoria(nombre, categorias)` (`constants/tema.ts`), `periodoSemana`, `periodoMes`
+(`utils/periodos.ts`), y `totalEnPeriodo` / `resumenPorCategoria(gastos, periodo)`
+(`utils/calculos.ts`).

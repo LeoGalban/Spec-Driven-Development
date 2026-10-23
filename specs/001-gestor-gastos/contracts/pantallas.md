@@ -38,3 +38,14 @@ Cada archivo de `gestor-gastos/app/` es una pantalla. Esta tabla es el "mapa" de
 
 Los tres estados se dibujan con componentes compartidos de `components/`: `Cargando`,
 `MensajeVacio` y `MensajeError`.
+
+## Agregado durante el desarrollo (H6 y H7)
+
+| # spec | Archivo | Ruta | Título | Cómo se llega |
+|---|---|---|---|---|
+| 5 | `app/categoria/nueva.tsx` | `/categoria/nueva` | Nueva categoría | Mosaico "Nueva" en las categorías del formulario. |
+
+- **Formulario**: la lista de categorías ya no es fija: se pide a `obtenerCategorias()` (con sus
+  estados de carga y error) y termina con el mosaico "Nueva".
+- **Resumen**: selector "Semana / Mes" y flechas "‹ ›" debajo del encabezado; si el período no
+  tiene gastos, "No hay gastos en este período" sin ocultar el selector.

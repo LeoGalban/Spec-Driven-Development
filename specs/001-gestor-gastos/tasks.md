@@ -153,10 +153,39 @@
 
 ---
 
+## Fase 7c: Historia 6 — Crear categorías propias (P3, agregada durante el desarrollo)
+
+**Objetivo**: el usuario puede crear categorías y usarlas en sus gastos (FR-016).
+
+**Prueba independiente**: escenarios 20–23 de [quickstart.md](quickstart.md).
+
+> Agregada a pedido del autor después de terminar las historias 1–5. Siguiendo la constitución
+> (principio I), primero se amplió la spec (Historia 6, FR-007 y FR-016) y se avisa a los docentes.
+
+- [ ] T24 [H6] Datos de categorías: en `types/gasto.ts` cambiar `Categoria` a `string` y agregar `InfoCategoria` (`nombre`, `color`, `icono`, `propia`); en `constants/tema.ts` agregar `COLORES_CATEGORIA` (6 colores), `ICONOS_CATEGORIA` (8 íconos `{ ios, android }`), `CATEGORIAS_FIJAS: InfoCategoria[]` (las 6 de FR-007 con su ícono y color) y `estiloDeCategoria(nombre, categorias)` (ícono gris genérico si no la encuentra); crear `services/categorias.ts` con `obtenerCategorias()` y `crearCategoria(datos)` según [el contrato](contracts/servicio-gastos.md) (clave de AsyncStorage `categorias`, con `esperar()` y `simularError()`); agregar `validarCategoria(nombre, existentes)` a `utils/validacion.ts` con las reglas y mensajes de [data-model.md](data-model.md).
+  - **Verificar**: `npx tsc --noEmit` sin errores y, en la computadora, crear/obtener categorías con un AsyncStorage simulado y probar las 3 reglas de `validarCategoria`.
+- [ ] T25 [H6] Pantallas: `IconoCategoria` recibe el estilo (`icono`, `color`) en vez del nombre; lista, detalle y resumen piden gastos y categorías juntos con `Promise.all` y usan `estiloDeCategoria`; `resumenPorCategoria` agrupa por el nombre de categoría de cada gasto (sirve para las fijas y las creadas); `SelectorCategoria` recibe la lista de categorías y termina con el mosaico "Nueva"; el formulario carga las categorías con `useFocusEffect` (con carga y error) y, si al volver hay una más que antes, la elige. Crear `app/categoria/nueva.tsx` (título "Nueva categoría"): campo nombre, 6 colores, 8 íconos, vista previa, botón "Crear" (deshabilitado mientras guarda) con `validarCategoria` y `crearCategoria`, y `router.back()`.
+  - **Verificar**: escenarios 20, 21, 22 y 23 de [quickstart.md](quickstart.md).
+
+---
+
+## Fase 7d: Historia 7 — Resumen por semana y por mes (P3, agregada durante el desarrollo)
+
+**Objetivo**: el resumen se puede ver por semana o por mes, y de períodos anteriores (FR-010, FR-017).
+
+**Prueba independiente**: escenarios 24 y 25 de [quickstart.md](quickstart.md).
+
+- [ ] T26 [P] [H7] Crear `utils/periodos.ts` con `type Periodo = { desde, hasta, titulo }`, `periodoMes(mesesAtras)` (del día 1 al último día; título "Octubre 2026") y `periodoSemana(semanasAtras)` (de lunes a domingo; título "19/10 al 25/10"). En `utils/calculos.ts` agregar `totalEnPeriodo(gastos, periodo)` y cambiar `resumenPorCategoria(gastos, periodo)` para que sume los gastos con `desde <= fecha <= hasta`.
+  - **Verificar**: `npx tsc --noEmit` sin errores y, en la computadora, períodos para fechas difíciles (1 de enero, domingo, semana que cruza dos meses) y totales iguales a la suma manual.
+- [ ] T27 [H7] En `app/(tabs)/resumen.tsx`: selector "Semana / Mes" (por defecto "Mes") y una fila con "‹", el título del período y "›" ("›" deshabilitado en el período actual). El encabezado muestra el total del período elegido; si el período no tiene gastos, "No hay gastos en este período" debajo del selector (sin ocultarlo).
+  - **Verificar**: escenarios 14, 24 y 25 de [quickstart.md](quickstart.md).
+
+---
+
 ## Fase 8: Cierre
 
 - [ ] T21 Recorrer **todos** los escenarios de [quickstart.md](quickstart.md) en el teléfono, incluido el 18 (cambiar `PROBABILIDAD_ERROR` a `1` en `services/simulacion.ts`, ver el error en cada pantalla y volver a `0`). Anotar el resultado de cada escenario en `PROCESO.md` y corregir lo que falle (cada corrección es un commit `fix:`).
-  - **Verificar**: los 19 escenarios dan el resultado esperado.
+  - **Verificar**: los 25 escenarios dan el resultado esperado.
 - [ ] T22 Crear `README.md` en la raíz del repositorio con instrucciones para correr el proyecto (requisitos, `npm install`, `npx expo start --tunnel`, Expo Go; lo pide la consigna para la entrega). Completar `PROCESO.md` (en la raíz del repositorio): capturas de las 4 pantallas y de los estados de carga, vacío y error; lo que haya quedado fuera de la spec y por qué (constitución, principio I); y la sección de conclusiones.
   - **Verificar**: releer el documento completo.
 
@@ -215,6 +244,6 @@ Cada historia que se termina suma algo visible sin romper lo anterior:
 
 ## Resumen
 
-- **Total**: 23 tareas (T23, diseño visual, se agregó durante el desarrollo).
+- **Total**: 27 tareas. Se agregaron durante el desarrollo: T23 (diseño visual), T24–T25 (Historia 6) y T26–T27 (Historia 7).
 - **Por fase**: Preparación 3 · Base 5 · H1 3 · H2 1 · H3 4 · H4 2 · H5 2 · Cierre 2.
 - **MVP sugerido**: hasta T11 (Historia 1).

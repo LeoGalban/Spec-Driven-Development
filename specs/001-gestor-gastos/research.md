@@ -131,3 +131,47 @@ Cada decisión responde una duda del contexto técnico del [plan](plan.md). Form
 - **Por qué**: si las fechas fueran fijas (por ejemplo, octubre de 2026), en noviembre el total del
   mes daría $ 0 y el resumen quedaría vacío. Así siempre se puede probar FR-002 y FR-010.
 - **Alternativas descartadas**: fechas fijas.
+
+---
+
+## Decisiones agregadas durante el desarrollo (H6 y H7)
+
+## 14. Dónde se guardan las categorías creadas
+
+- **Decisión**: un servicio nuevo `services/categorias.ts` con `obtenerCategorias()` y
+  `crearCategoria()`, con la misma demora y error simulados que los gastos. Las categorías creadas
+  se guardan en AsyncStorage en otra clave, `categorias`; las 6 fijas siguen en el código
+  (`constants/tema.ts`) y el servicio devuelve las 6 fijas + las creadas.
+- **Por qué**: mantiene el principio III (las pantallas solo hablan con `services/`) y no cambia
+  cómo se guardan los gastos: un gasto sigue guardando el **nombre** de su categoría.
+- **Alternativas descartadas**: guardar las categorías dentro de cada gasto (se repetirían);
+  guardar también las 6 fijas en AsyncStorage (habría que "sembrarlas" como los datos de ejemplo).
+
+## 15. Cómo saben las pantallas el ícono y el color de una categoría creada
+
+- **Decisión**: las pantallas que muestran gastos (lista, detalle, resumen) piden los gastos y las
+  categorías juntos con `Promise.all`, y le pasan a `IconoCategoria` el **estilo** (ícono y color)
+  de la categoría. Si un gasto tuviera una categoría que no existe, se muestra un ícono gris
+  genérico.
+- **Por qué**: es explícito (se ve de dónde sale cada dato) y `Promise.all` hace los dos pedidos a
+  la vez, así la espera no se duplica.
+- **Alternativas descartadas**: un "almacén" global en memoria o Context (más difícil de explicar).
+
+## 16. Elegir la categoría recién creada
+
+- **Decisión**: "Nueva categoría" es otra pantalla (`app/categoria/nueva.tsx`). Al crearla vuelve
+  con `router.back()`. El formulario recarga las categorías cada vez que vuelve a verse
+  (`useFocusEffect`): si hay una más que antes, la elige automáticamente (las creadas se agregan
+  al final).
+- **Por qué**: no hace falta pasar datos "hacia atrás" entre pantallas.
+
+## 17. Semanas y meses
+
+- **Decisión**: un archivo `utils/periodos.ts` con `periodoSemana(semanasAtras)` y
+  `periodoMes(mesesAtras)`, que devuelven `{ desde, hasta, titulo }` con fechas `AAAA-MM-DD`. La
+  semana va de **lunes a domingo**. Los cálculos de resumen reciben el período y suman los gastos
+  con `desde <= fecha <= hasta` (comparando texto, como en T09).
+- **Por qué**: separa "qué período mirar" de "cómo sumar", y las dos partes se prueban solas.
+  Comparar textos `AAAA-MM-DD` resuelve sola la semana que cruza dos meses.
+- **Alternativas descartadas**: semanas de domingo a sábado (en Argentina la semana laboral
+  empieza el lunes); una librería de fechas (dependencia extra).

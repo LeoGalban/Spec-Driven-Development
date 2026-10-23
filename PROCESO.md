@@ -278,6 +278,29 @@ Spec Kit generó, en [`specs/001-gestor-gastos/`](specs/001-gestor-gastos/):
 > ✏️ **Revisión personal:** _(completar al leer `plan.md` y `tasks.md`: qué cambié a mano o qué
 > me pareció que sobraba o faltaba)._
 
+### 3.3 Ampliación del alcance durante el desarrollo (Historias 6 y 7)
+
+Con las 5 historias terminadas, pedí dos funciones nuevas:
+
+- **Prompt:** "quiero que hagas para que pueda agregar categoría, además pueda tener resúmenes
+  semanales y mensuales también".
+- **Qué señaló la IA:** las dos estaban **fuera de alcance** en la spec aprobada ("Categorías
+  personalizadas" figuraba en *Fuera de alcance* y FR-010 solo pedía el resumen del mes). Según
+  la consigna y la constitución (principio I), antes de programar hay que ampliar la spec y avisar
+  a los docentes.
+- **Qué se hizo (sin tocar código):**
+  - `spec.md`: nuevas **Historia 6** (crear categorías) e **Historia 7** (resumen por semana y por
+    mes) con sus escenarios de aceptación; nuevos **FR-016** y **FR-017**; cambian FR-006, FR-007
+    y FR-010; nueva pantalla 5 ("Nueva categoría"); casos borde nuevos (nombre repetido, semana que
+    cruza dos meses); en *Fuera de alcance* queda "editar o borrar categorías".
+  - `research.md` §14–17, `data-model.md`, `contracts/`, `plan.md` y `quickstart.md` (escenarios
+    20–25).
+  - `tasks.md`: tareas **T24–T25** (Historia 6) y **T26–T27** (Historia 7), antes del cierre.
+- **Decisiones:** la semana va de **lunes a domingo**; las categorías creadas se guardan en otra
+  clave de AsyncStorage y pasan por `services/`, como los gastos; solo se pueden **crear** (editar
+  o borrar quedó fuera de alcance para no agrandar demasiado el trabajo).
+- **Aviso a los docentes:** _(completar: fecha y respuesta de los docentes)._
+
 ---
 
 ## 4. Setup del entorno

@@ -136,3 +136,13 @@ Sigue las prioridades de la spec, para tener algo funcionando en el teléfono lo
 | Excepción | Por qué hace falta | Alternativa simple descartada |
 |---|---|---|
 | Librerías de diseño agregadas en T23 (FR-015): `expo-symbols`, `expo-font`, `expo-splash-screen`, `@expo-google-fonts/outfit` | El principio V pide no agregar librerías "si se puede resolver con React Native básico". Íconos del sistema y una tipografía propia **no** se pueden hacer con React Native básico. Las 4 son oficiales de Expo e incluidas en Expo Go (principio II). | Emojis como íconos (primera versión de T23): no se ven profesionales y cambian según el teléfono. Se probaron también Plus Jakarta Sans, Nunito y Fredoka antes de elegir Outfit. |
+
+## Agregado durante el desarrollo (H6 y H7)
+
+Archivos nuevos: `services/categorias.ts`, `utils/periodos.ts`, `app/categoria/nueva.tsx`.
+Archivos que cambian: `types/gasto.ts` (Categoria pasa a `string`, nuevo `InfoCategoria`),
+`constants/tema.ts` (colores e íconos para categorías nuevas, `estiloDeCategoria`),
+`utils/validacion.ts` (`validarCategoria`), `utils/calculos.ts` (cálculos por período),
+`components/IconoCategoria.tsx` y `SelectorCategoria.tsx`, y las pantallas de lista, detalle,
+formulario y resumen. Decisiones en [research.md](research.md) §14–17. **Verificación de la
+constitución**: sigue cumpliendo; no se agregan librerías y los datos nuevos pasan por `services/`.

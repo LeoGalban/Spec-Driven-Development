@@ -106,3 +106,37 @@ tabla.
                            v
                       (no existe)  → su detalle muestra "No se encontró el gasto"
 ```
+
+## Agregado durante el desarrollo (H6 y H7)
+
+### Categoria (cambia)
+
+`Categoria` pasa de ser una lista cerrada a ser el **nombre** de una categoría (`string`). Los
+gastos guardados no cambian: siguen teniendo el nombre de su categoría.
+
+### InfoCategoria (nuevo)
+
+| Campo | Tipo | Ejemplo | Notas |
+|---|---|---|---|
+| `nombre` | `string` | `"Mascotas"` | Único (sin importar mayúsculas). |
+| `color` | `string` | `"#0E9384"` | Uno de `COLORES_CATEGORIA` (6 opciones). |
+| `icono` | `{ ios, android }` | `{ ios: 'pawprint.fill', android: 'pets' }` | Uno de `ICONOS_CATEGORIA` (8 opciones). |
+| `propia` | `boolean` | `true` | `false` para las 6 fijas. |
+
+Se guardan en AsyncStorage, clave `categorias`, solo las creadas por el usuario (sin `propia`).
+
+### Validación de una categoría nueva (FR-016)
+
+`validarCategoria(nombre, existentes)` devuelve el mensaje de error o `null`:
+
+| Regla | Mensaje |
+|---|---|
+| Vacío (sin contar espacios) | "Escribí un nombre" |
+| Menos de 2 o más de 20 caracteres | "El nombre debe tener entre 2 y 20 caracteres" |
+| Ya existe (sin importar mayúsculas) | "Ya existe una categoría con ese nombre" |
+
+### Periodo (nuevo)
+
+`{ desde: 'AAAA-MM-DD', hasta: 'AAAA-MM-DD', titulo: string }`. Ejemplos:
+`periodoMes(0)` → octubre 2026, título "Octubre 2026"; `periodoSemana(0)` → del lunes 19/10 al
+domingo 25/10, título "19/10 al 25/10".
