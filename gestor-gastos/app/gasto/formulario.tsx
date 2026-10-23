@@ -1,5 +1,5 @@
 import { router, Stack, useLocalSearchParams } from 'expo-router';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { ReactNode, Ref, useCallback, useEffect, useRef, useState } from 'react';
 import {
   KeyboardTypeOptions,
   Pressable,
@@ -7,16 +7,20 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TextInputInstance,
   View,
 } from 'react-native';
 
 import Cargando from '../../components/Cargando';
+import Icono, { NombreIcono } from '../../components/Icono';
 import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
 import SelectorCategoria from '../../components/SelectorCategoria';
+import { COLORES, FUENTES, RADIO, SOMBRA } from '../../constants/tema';
 import { actualizarGasto, crearGasto, obtenerGasto } from '../../services/gastos';
 import { DatosGasto, ErroresFormulario, ValoresFormulario } from '../../types/gasto';
 import {
+  ayer,
   centavosATexto,
   fechaAGuardar,
   fechaAMostrar,
@@ -53,6 +57,11 @@ export default function PantallaFormulario() {
   // y no crea el gasto dos veces (caso borde de la spec).
   const yaGuardando = useRef(false);
 
+  // Referencias a los campos, para pasar al siguiente con la tecla "Siguiente" del teclado.
+  const refDescripcion = useRef<TextInputInstance>(null);
+  const refFecha = useRef<TextInputInstance>(null);
+  const refNota = useRef<TextInputInstance>(null);
+
   // Trae el gasto a editar y completa los campos con sus datos.
   const cargarGasto = useCallback(async () => {
     if (!esEdicion) return;
@@ -85,8 +94,10 @@ export default function PantallaFormulario() {
   }, [cargarGasto]);
 
   // Cambia un solo campo y deja los demás como estaban.
+  // Se usa la forma "funcional" de setValores (recibe los valores anteriores): así siempre parte
+  // del último valor, aunque se cambien dos campos seguidos antes de que se redibuje la pantalla.
   function cambiar<C extends keyof ValoresFormulario>(campo: C, valor: ValoresFormulario[C]) {
-    setValores({ ...valores, [campo]: valor });
+    setValores((anteriores) => ({ ...anteriores, [campo]: valor }));
   }
 
   async function guardar() {
@@ -124,7 +135,11 @@ export default function PantallaFormulario() {
   }
 
   // El título cambia según el modo. Stack.Screen dentro de la pantalla configura su encabezado.
-  const titulo = <Stack.Screen options={{ title: esEdicion ? 'Editar gasto' : 'Nuevo gasto' }} />;
+  const titulo = (
+    <>
+      <Stack.Screen options={{ title: esEdicion ? 'Editar gasto' : 'Nuevo gasto' }} />
+    </>
+  );
 
   if (cargando) {
     return (
@@ -164,20 +179,35 @@ export default function PantallaFormulario() {
         keyboardShouldPersistTaps="handled" // permite tocar "Guardar" con el teclado abierto
         contentContainerStyle={styles.contenedor}
       >
+        {/* El monto va primero, grande y centrado: es el dato más importante */}
+        <View style={[styles.tarjetaMonto, errores.monto && styles.tarjetaMontoConError]}>
+          <Text style={styles.etiquetaMonto}>¿Cuánto gastaste?</Text>
+          <View style={styles.filaMonto}>
+            <Text style={styles.signoPeso}>$</Text>
+            <TextInput
+              value={valores.monto}
+              onChangeText={(texto) => cambiar('monto', texto)}
+              placeholder="0,00"
+              placeholderTextColor={COLORES.textoSecundario}
+              keyboardType="decimal-pad"
+              // Al agregar un gasto, el cursor ya está en el monto (al editar no, para no tapar con el teclado).
+              autoFocus={!esEdicion}
+              accessibilityLabel="Monto en pesos"
+              style={styles.inputMonto}
+            />
+          </View>
+          {errores.monto && <Text style={styles.errorMonto}>{errores.monto}</Text>}
+        </View>
+
         <Campo
           etiqueta="Descripción"
           valor={valores.descripcion}
           alCambiar={(texto) => cambiar('descripcion', texto)}
           error={errores.descripcion}
           placeholder="Ej: Supermercado"
-        />
-        <Campo
-          etiqueta="Monto ($)"
-          valor={valores.monto}
-          alCambiar={(texto) => cambiar('monto', texto)}
-          error={errores.monto}
-          placeholder="Ej: 1500,50"
-          teclado="decimal-pad"
+          icono={{ ios: 'text.cursor', android: 'edit_note' }}
+          ref={refDescripcion}
+          alEnviar={() => refFecha.current?.focus()} // "Siguiente" salta a la fecha
         />
 
         <Text style={styles.etiqueta}>Categoría</Text>
@@ -194,6 +224,16 @@ export default function PantallaFormulario() {
           error={errores.fecha}
           placeholder="Ej: 23/10/2026"
           teclado="numbers-and-punctuation"
+          icono={{ ios: 'calendar', android: 'calendar_today' }}
+          ref={refFecha}
+          alEnviar={() => refNota.current?.focus()} // "Siguiente" salta a la nota
+          // Atajos: con un toque se completa la fecha de hoy o de ayer (lo más común).
+          extra={
+            <View style={styles.atajos}>
+              <Atajo texto="Hoy" alPresionar={() => cambiar('fecha', fechaAMostrar(hoy()))} />
+              <Atajo texto="Ayer" alPresionar={() => cambiar('fecha', fechaAMostrar(ayer()))} />
+            </View>
+          }
         />
         <Campo
           etiqueta="Nota (opcional)"
@@ -202,6 +242,8 @@ export default function PantallaFormulario() {
           error={errores.nota}
           placeholder="Algo que quieras recordar"
           multilinea
+          icono={{ ios: 'text.alignleft', android: 'notes' }}
+          ref={refNota}
         />
 
         {errorAlGuardar && <Text style={styles.errorGeneral}>{errorAlGuardar}</Text>}
@@ -209,8 +251,17 @@ export default function PantallaFormulario() {
         <Pressable
           onPress={guardar}
           disabled={guardando}
-          style={[styles.boton, guardando && styles.botonDeshabilitado]}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: guardando, busy: guardando }}
+          style={({ pressed }) => [
+            styles.boton,
+            guardando && styles.botonDeshabilitado,
+            pressed && styles.presionado,
+          ]}
         >
+          {!guardando && (
+            <Icono nombre={{ ios: 'checkmark', android: 'check' }} tamanio={18} color="#fff" />
+          )}
           <Text style={styles.textoBoton}>{guardando ? 'Guardando…' : 'Guardar'}</Text>
         </Pressable>
       </ScrollView>
@@ -226,9 +277,13 @@ type PropsCampo = {
   placeholder?: string;
   teclado?: KeyboardTypeOptions;
   multilinea?: boolean;
+  icono: NombreIcono; // ícono que va adentro del campo, a la izquierda
+  ref?: Ref<TextInputInstance>; // para poder darle el foco desde afuera (React 19 lo permite como prop)
+  alEnviar?: () => void; // qué hacer al tocar "Siguiente" en el teclado
+  extra?: ReactNode; // algo para mostrar a la derecha de la etiqueta (por ejemplo, atajos)
 };
 
-// Un campo de texto con su etiqueta arriba y su mensaje de error abajo (si tiene).
+// Un campo de texto con su etiqueta arriba, un ícono adentro y su mensaje de error abajo (si tiene).
 // Solo lo usa esta pantalla, por eso vive acá.
 function Campo({
   etiqueta,
@@ -238,20 +293,63 @@ function Campo({
   placeholder,
   teclado,
   multilinea,
+  icono,
+  ref,
+  alEnviar,
+  extra,
 }: PropsCampo) {
   return (
     <View>
-      <Text style={styles.etiqueta}>{etiqueta}</Text>
-      <TextInput
-        value={valor}
-        onChangeText={alCambiar}
-        placeholder={placeholder}
-        keyboardType={teclado}
-        multiline={multilinea}
-        style={[styles.input, multilinea && styles.inputMultilinea, error && styles.inputConError]}
-      />
+      <View style={styles.filaEtiqueta}>
+        <Text style={styles.etiqueta}>{etiqueta}</Text>
+        {extra}
+      </View>
+      <View
+        style={[
+          styles.caja,
+          multilinea && styles.cajaMultilinea,
+          error !== undefined && styles.cajaConError,
+        ]}
+      >
+        <Icono
+          nombre={icono}
+          tamanio={18}
+          color={error !== undefined ? COLORES.error : COLORES.textoSecundario}
+        />
+        <TextInput
+          ref={ref}
+          value={valor}
+          onChangeText={alCambiar}
+          // Si hay un campo siguiente, la tecla del teclado dice "Siguiente" y salta a él.
+          returnKeyType={alEnviar ? 'next' : 'default'}
+          onSubmitEditing={alEnviar}
+          submitBehavior={alEnviar ? 'submit' : undefined}
+          accessibilityLabel={etiqueta}
+          accessibilityHint={error}
+          placeholder={placeholder}
+          placeholderTextColor={COLORES.textoSecundario}
+          keyboardType={teclado}
+          multiline={multilinea}
+          style={[styles.input, multilinea && styles.inputMultilinea]}
+        />
+      </View>
       {error && <Text style={styles.error}>{error}</Text>}
     </View>
+  );
+}
+
+// Botoncito chico para completar un campo con un toque ("Hoy", "Ayer").
+function Atajo({ texto, alPresionar }: { texto: string; alPresionar: () => void }) {
+  return (
+    <Pressable
+      onPress={alPresionar}
+      accessibilityRole="button"
+      accessibilityLabel={`Fecha: ${texto}`}
+      hitSlop={8} // amplía la zona que se puede tocar, sin agrandar el botón
+      style={({ pressed }) => [styles.atajo, pressed && styles.presionado]}
+    >
+      <Text style={styles.textoAtajo}>{texto}</Text>
+    </Pressable>
   );
 }
 
@@ -260,53 +358,144 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 40,
   },
+  // Tarjeta blanca con el monto grande y centrado: es el dato más importante.
+  tarjetaMonto: {
+    alignItems: 'center',
+    backgroundColor: COLORES.superficie,
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+    borderRadius: RADIO.grande,
+    paddingVertical: 22,
+    paddingHorizontal: 16,
+    ...SOMBRA,
+  },
+  tarjetaMontoConError: {
+    backgroundColor: COLORES.errorSuave,
+    borderColor: COLORES.error,
+  },
+  etiquetaMonto: {
+    fontSize: 13,
+    fontFamily: FUENTES.media,
+    color: COLORES.textoSecundario,
+  },
+  filaMonto: {
+    flexDirection: 'row', // el "$" y el número uno al lado del otro
+    alignItems: 'center',
+    marginTop: 4,
+  },
+  signoPeso: {
+    fontSize: 28,
+    fontFamily: FUENTES.seminegrita,
+    color: COLORES.textoSecundario,
+    marginRight: 6,
+  },
+  inputMonto: {
+    minWidth: 120,
+    fontSize: 38,
+    fontFamily: FUENTES.negrita,
+    color: COLORES.texto,
+    textAlign: 'center',
+    letterSpacing: -1,
+  },
+  errorMonto: {
+    marginTop: 4,
+    fontSize: 13,
+    fontFamily: FUENTES.media,
+    color: COLORES.error,
+  },
+  filaEtiqueta: {
+    flexDirection: 'row',
+    justifyContent: 'space-between', // la etiqueta a la izquierda y los atajos a la derecha
+    alignItems: 'flex-end',
+  },
+  atajos: {
+    flexDirection: 'row',
+    gap: 6,
+    marginBottom: 8,
+  },
+  atajo: {
+    backgroundColor: COLORES.limaSuave,
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: RADIO.chico,
+  },
+  textoAtajo: {
+    fontSize: 13,
+    fontFamily: FUENTES.seminegrita,
+    color: COLORES.bosque,
+  },
+  presionado: {
+    transform: [{ scale: 0.97 }],
+  },
   etiqueta: {
-    marginTop: 16,
-    marginBottom: 6,
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#444',
+    marginTop: 20,
+    marginBottom: 8,
+    fontSize: 13,
+    fontFamily: FUENTES.seminegrita,
+    color: COLORES.textoSecundario,
+    textTransform: 'uppercase', // mismo estilo que los títulos de sección de la lista
+    letterSpacing: 0.6,
+  },
+  // La "caja" es el borde redondeado; adentro van el ícono y el campo de texto.
+  caja: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    backgroundColor: COLORES.superficie,
+    borderWidth: 1.5,
+    borderColor: COLORES.borde,
+    borderRadius: RADIO.medio,
+    paddingHorizontal: 14,
+  },
+  cajaMultilinea: {
+    alignItems: 'flex-start',
+    paddingTop: 14,
+  },
+  cajaConError: {
+    borderColor: COLORES.error,
+    backgroundColor: COLORES.errorSuave,
   },
   input: {
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    fontSize: 16,
+    flex: 1, // ocupa todo el ancho que deja el ícono
+    paddingVertical: 13,
+    fontSize: 15,
+    fontFamily: FUENTES.regular,
+    color: COLORES.texto,
   },
   inputMultilinea: {
     minHeight: 80,
+    paddingTop: 0,
     textAlignVertical: 'top', // en Android, el texto empieza arriba y no en el medio
   },
-  inputConError: {
-    borderColor: '#C62828',
-  },
   error: {
-    marginTop: 4,
+    marginTop: 6,
     fontSize: 13,
-    color: '#C62828',
+    fontFamily: FUENTES.media,
+    color: COLORES.error,
   },
   errorGeneral: {
     marginTop: 20,
-    fontSize: 15,
-    color: '#C62828',
+    fontSize: 14,
+    fontFamily: FUENTES.media,
+    color: COLORES.error,
     textAlign: 'center',
   },
   boton: {
-    marginTop: 24,
-    backgroundColor: '#007AFF',
-    paddingVertical: 14,
-    borderRadius: 10,
+    marginTop: 28,
+    flexDirection: 'row', // ícono y texto uno al lado del otro
+    justifyContent: 'center',
     alignItems: 'center',
+    gap: 8,
+    backgroundColor: COLORES.bosque,
+    paddingVertical: 16,
+    borderRadius: RADIO.medio,
   },
   botonDeshabilitado: {
     opacity: 0.5,
   },
   textoBoton: {
     color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 16,
+    fontFamily: FUENTES.seminegrita,
   },
 });

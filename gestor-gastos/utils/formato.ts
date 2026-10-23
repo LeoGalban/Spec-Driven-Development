@@ -66,3 +66,44 @@ export function fechaATexto(fecha: Date): string {
 export function hoy(): string {
   return fechaATexto(new Date());
 }
+
+// Fecha de ayer en formato "AAAA-MM-DD". Date resuelve solo el cambio de mes o de año.
+export function ayer(): string {
+  const fecha = new Date();
+  fecha.setDate(fecha.getDate() - 1);
+  return fechaATexto(fecha);
+}
+
+const MESES = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+// "2026-10-23" → "Octubre 2026" (para el título del total del mes).
+export function mesYAnio(fecha: string): string {
+  const [anio, mes] = fecha.split('-');
+  return `${MESES[Number(mes) - 1]} ${anio}`;
+}
+
+const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+
+// Título de un grupo de la lista: "Hoy", "Ayer" o "Jueves 15 de octubre".
+export function fechaRelativa(fecha: string): string {
+  if (fecha === hoy()) return 'Hoy';
+
+  const [anio, mes, dia] = fecha.split('-').map(Number);
+  if (fecha === ayer()) return 'Ayer';
+
+  const diaDeLaSemana = DIAS[new Date(anio, mes - 1, dia).getDay()]; // getDay(): 0 = domingo
+  return `${diaDeLaSemana} ${dia} de ${MESES[mes - 1].toLowerCase()}`;
+}

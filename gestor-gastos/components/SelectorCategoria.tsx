@@ -1,26 +1,38 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+import { COLORES, colorSuave, ESTILO_CATEGORIA, FUENTES, RADIO } from '../constants/tema';
 import { CATEGORIAS, Categoria } from '../types/gasto';
+import Icono from './Icono';
 
 type Props = {
   valor: Categoria | null; // la categoría elegida, o null si todavía no eligió
   alCambiar: (categoria: Categoria) => void;
 };
 
-// Un botón por cada una de las 6 categorías fijas (FR-007). El elegido se resalta en azul.
+// Las 6 categorías fijas (FR-007) en una cuadrícula de 3 columnas, con su ícono.
+// La elegida se marca con el borde y el fondo del color de su categoría.
 // No guarda estado propio: la categoría elegida la guarda la pantalla del formulario.
 export default function SelectorCategoria({ valor, alCambiar }: Props) {
   return (
-    <View style={styles.contenedor}>
+    <View style={styles.cuadricula}>
       {CATEGORIAS.map((categoria) => {
         const elegida = categoria === valor;
+        const { icono, color } = ESTILO_CATEGORIA[categoria];
         return (
           <Pressable
             key={categoria}
             onPress={() => alCambiar(categoria)}
-            style={[styles.boton, elegida && styles.botonElegido]}
+            accessibilityRole="button"
+            accessibilityLabel={categoria}
+            accessibilityState={{ selected: elegida }} // VoiceOver dice "seleccionado"
+            style={({ pressed }) => [
+              styles.mosaico,
+              elegida && { borderColor: color, backgroundColor: colorSuave(color) },
+              pressed && styles.presionado,
+            ]}
           >
-            <Text style={[styles.texto, elegida && styles.textoElegido]}>{categoria}</Text>
+            <Icono nombre={icono} tamanio={22} color={color} />
+            <Text style={[styles.texto, elegida && { color: COLORES.texto }]}>{categoria}</Text>
           </Pressable>
         );
       })}
@@ -29,29 +41,27 @@ export default function SelectorCategoria({ valor, alCambiar }: Props) {
 }
 
 const styles = StyleSheet.create({
-  contenedor: {
+  cuadricula: {
     flexDirection: 'row',
-    flexWrap: 'wrap', // si no entran en una fila, siguen en la de abajo
+    flexWrap: 'wrap', // tres por fila; las demás siguen abajo
     gap: 8,
   },
-  boton: {
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    backgroundColor: '#fff',
+  mosaico: {
+    width: '31.8%',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    borderRadius: RADIO.medio,
+    borderWidth: 1.5,
+    borderColor: 'transparent', // ocupa su lugar aunque no se vea: así nada "salta" al elegir
+    backgroundColor: COLORES.superficie,
   },
-  botonElegido: {
-    backgroundColor: '#007AFF',
-    borderColor: '#007AFF',
+  presionado: {
+    transform: [{ scale: 0.96 }],
   },
   texto: {
-    fontSize: 15,
-    color: '#222',
-  },
-  textoElegido: {
-    color: '#fff',
-    fontWeight: '600',
+    fontSize: 13,
+    fontFamily: FUENTES.media,
+    color: COLORES.textoSecundario,
   },
 });

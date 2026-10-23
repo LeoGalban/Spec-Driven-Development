@@ -3,8 +3,18 @@ import { useCallback, useState } from 'react';
 import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Cargando from '../../components/Cargando';
+import Icono, { NombreIcono } from '../../components/Icono';
+import IconoCategoria from '../../components/IconoCategoria';
 import MensajeError from '../../components/MensajeError';
 import MensajeVacio from '../../components/MensajeVacio';
+import {
+  colorSuave,
+  COLORES,
+  ESTILO_CATEGORIA,
+  FUENTES,
+  RADIO,
+  SOMBRA,
+} from '../../constants/tema';
 import { eliminarGasto, obtenerGasto } from '../../services/gastos';
 import { Gasto } from '../../types/gasto';
 import { fechaAMostrar, formatearPesos } from '../../utils/formato';
@@ -73,47 +83,91 @@ export default function PantallaDetalle() {
     );
   }
 
+  const { color } = ESTILO_CATEGORIA[gasto.categoria];
+
   return (
     // contentInsetAdjustmentBehavior="automatic": en iPhone el encabezado es transparente y
-    // el contenido quedaba escondido detrás; así el ScrollView deja el espacio necesario.
-    <ScrollView contentInsetAdjustmentBehavior="automatic" contentContainerStyle={styles.contenedor}>
-      <Text style={styles.monto}>{formatearPesos(gasto.montoCentavos)}</Text>
-      <Text style={styles.descripcion}>{gasto.descripcion}</Text>
-
-      <View style={styles.tarjeta}>
-        <Dato etiqueta="Categoría" valor={gasto.categoria} />
-        <Dato etiqueta="Fecha" valor={fechaAMostrar(gasto.fecha)} />
-        {/* La nota es opcional: solo se muestra si tiene texto */}
-        {gasto.nota !== '' && <Dato etiqueta="Nota" valor={gasto.nota} />}
+    // el contenido quedaría escondido detrás; así el ScrollView deja el espacio necesario.
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.contenedor}
+    >
+      {/* Arriba: ícono grande, monto, descripción y la categoría en una "pastilla" de su color */}
+      <View style={styles.cabecera}>
+        <IconoCategoria categoria={gasto.categoria} tamanio={64} />
+        <Text style={styles.monto} numberOfLines={1} adjustsFontSizeToFit>
+          {formatearPesos(gasto.montoCentavos)}
+        </Text>
+        <Text style={styles.descripcion}>{gasto.descripcion}</Text>
+        <Text style={[styles.pastilla, { backgroundColor: colorSuave(color) }]}>
+          {gasto.categoria}
+        </Text>
       </View>
 
-      {/* Abre el mismo formulario de "Agregar", pero con el id: así sabe que tiene que editar */}
-      <Pressable
-        style={styles.boton}
-        onPress={() => router.push({ pathname: '/gasto/formulario', params: { id: gasto.id } })}
-      >
-        <Text style={styles.textoBoton}>Editar</Text>
-      </Pressable>
+      <View style={styles.tarjeta}>
+        <Dato
+          icono={{ ios: 'calendar', android: 'calendar_today' }}
+          etiqueta="Fecha"
+          valor={fechaAMostrar(gasto.fecha)}
+          ultimo={gasto.nota === ''}
+        />
+        {/* La nota es opcional: solo se muestra si tiene texto */}
+        {gasto.nota !== '' && (
+          <Dato
+            icono={{ ios: 'text.alignleft', android: 'notes' }}
+            etiqueta="Nota"
+            valor={gasto.nota}
+            ultimo
+          />
+        )}
+      </View>
 
-      <Pressable
-        style={[styles.boton, styles.botonEliminar, eliminando && styles.botonDeshabilitado]}
-        onPress={confirmarEliminar}
-        disabled={eliminando}
-      >
-        <Text style={[styles.textoBoton, styles.textoEliminar]}>
-          {eliminando ? 'Eliminando…' : 'Eliminar'}
-        </Text>
-      </Pressable>
+      <View style={styles.botones}>
+        {/* Abre el mismo formulario de "Agregar", pero con el id: así sabe que tiene que editar */}
+        <Pressable
+          style={({ pressed }) => [styles.boton, styles.botonEditar, pressed && styles.presionado]}
+          onPress={() => router.push({ pathname: '/gasto/formulario', params: { id: gasto.id } })}
+          accessibilityRole="button"
+        >
+          <Icono nombre={{ ios: 'pencil', android: 'edit' }} tamanio={16} color="#fff" />
+          <Text style={styles.textoEditar}>Editar</Text>
+        </Pressable>
+
+        <Pressable
+          style={({ pressed }) => [
+            styles.boton,
+            styles.botonEliminar,
+            eliminando && styles.botonDeshabilitado,
+            pressed && styles.presionado,
+          ]}
+          onPress={confirmarEliminar}
+          disabled={eliminando}
+          accessibilityRole="button"
+          accessibilityState={{ disabled: eliminando, busy: eliminando }}
+        >
+          <Icono
+            nombre={{ ios: 'trash', android: 'delete' }}
+            tamanio={16}
+            color={COLORES.rosaTexto}
+          />
+          <Text style={styles.textoEliminar}>{eliminando ? 'Eliminando…' : 'Eliminar'}</Text>
+        </Pressable>
+      </View>
     </ScrollView>
   );
 }
 
-// Una fila "etiqueta: valor" de la tarjeta. Solo la usa esta pantalla, por eso vive acá.
-function Dato({ etiqueta, valor }: { etiqueta: string; valor: string }) {
+type PropsDato = { icono: NombreIcono; etiqueta: string; valor: string; ultimo: boolean };
+
+// Una fila de la tarjeta: ícono, etiqueta y valor. Solo la usa esta pantalla, por eso vive acá.
+function Dato({ icono, etiqueta, valor, ultimo }: PropsDato) {
   return (
-    <View style={styles.dato}>
-      <Text style={styles.etiqueta}>{etiqueta}</Text>
-      <Text style={styles.valor}>{valor}</Text>
+    <View style={[styles.dato, !ultimo && styles.conLinea]}>
+      <Icono nombre={icono} tamanio={18} color={COLORES.textoSecundario} />
+      <View style={styles.textosDato}>
+        <Text style={styles.etiqueta}>{etiqueta}</Text>
+        <Text style={styles.valor}>{valor}</Text>
+      </View>
     </View>
   );
 }
@@ -122,62 +176,102 @@ const styles = StyleSheet.create({
   contenedor: {
     padding: 16,
   },
+  cabecera: {
+    alignItems: 'center',
+    paddingTop: 8,
+    paddingBottom: 24,
+  },
   monto: {
-    marginTop: 8,
+    marginTop: 14,
     fontSize: 36,
-    fontWeight: '700',
-    color: '#222',
-    textAlign: 'center',
+    fontFamily: FUENTES.negrita,
+    color: COLORES.texto,
+    letterSpacing: -1,
   },
   descripcion: {
-    marginTop: 4,
-    marginBottom: 20,
-    fontSize: 18,
-    color: '#555',
+    marginTop: 2,
+    fontSize: 17,
+    fontFamily: FUENTES.media,
+    color: COLORES.textoSecundario,
     textAlign: 'center',
   },
+  // Texto oscuro sobre el color suave de la categoría: con el color fuerte no se leía bien.
+  pastilla: {
+    marginTop: 12,
+    color: COLORES.texto,
+    fontSize: 13,
+    fontFamily: FUENTES.seminegrita,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: RADIO.chico,
+    overflow: 'hidden', // en iPhone, sin esto el fondo del texto no respeta las esquinas
+  },
   tarjeta: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
+    backgroundColor: COLORES.superficie,
+    borderRadius: RADIO.medio,
     paddingHorizontal: 16,
+    ...SOMBRA,
   },
   dato: {
-    paddingVertical: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth, // línea finita entre filas
-    borderBottomColor: '#ddd',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 14,
+  },
+  conLinea: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: COLORES.borde,
+  },
+  textosDato: {
+    flex: 1,
   },
   etiqueta: {
-    fontSize: 13,
-    color: '#777',
+    fontSize: 12,
+    fontFamily: FUENTES.regular,
+    color: COLORES.textoSecundario,
   },
   valor: {
-    marginTop: 2,
-    fontSize: 16,
-    color: '#222',
+    marginTop: 1,
+    fontSize: 15,
+    fontFamily: FUENTES.media,
+    color: COLORES.texto,
+  },
+  // Los dos botones uno al lado del otro.
+  botones: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 20,
   },
   boton: {
-    marginTop: 24,
-    backgroundColor: '#007AFF',
-    paddingVertical: 14,
-    borderRadius: 10,
+    flex: 1, // los dos ocupan lo mismo
+    flexDirection: 'row', // ícono y texto uno al lado del otro
+    justifyContent: 'center',
     alignItems: 'center',
+    gap: 8,
+    paddingVertical: 14,
+    borderRadius: RADIO.medio,
   },
-  textoBoton: {
+  botonEditar: {
+    backgroundColor: COLORES.bosque,
+  },
+  textoEditar: {
     color: '#fff',
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 15,
+    fontFamily: FUENTES.seminegrita,
   },
-  // "Eliminar" va en blanco con letras rojas, para que no se toque por error en vez de "Editar".
+  // "Eliminar" con fondo rosa suave y letras rosas, para no confundirlo con "Editar".
   botonEliminar: {
-    marginTop: 12,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#C62828',
+    backgroundColor: COLORES.rosaSuave,
   },
   textoEliminar: {
-    color: '#C62828',
+    color: COLORES.rosaTexto,
+    fontSize: 15,
+    fontFamily: FUENTES.seminegrita,
   },
   botonDeshabilitado: {
     opacity: 0.5,
+  },
+  presionado: {
+    transform: [{ scale: 0.97 }],
   },
 });

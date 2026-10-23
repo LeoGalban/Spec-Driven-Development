@@ -55,3 +55,26 @@ export function resumenPorCategoria(gastos: Gasto[]): ResumenCategoria[] {
   // sort con (a, b) => b - a ordena de mayor a menor.
   return resumen.sort((a, b) => b.totalCentavos - a.totalCentavos);
 }
+
+// Un grupo de la lista: todos los gastos de un mismo día y cuánto suman.
+export type GrupoDeDia = {
+  fecha: string; // "AAAA-MM-DD"
+  totalCentavos: number;
+  data: Gasto[]; // SectionList espera que la lista de cada grupo se llame "data"
+};
+
+// Agrupa los gastos por día, respetando el orden en que llegan (del más reciente al más antiguo).
+export function agruparPorDia(gastos: Gasto[]): GrupoDeDia[] {
+  const grupos: GrupoDeDia[] = [];
+  for (const gasto of gastos) {
+    const ultimo = grupos[grupos.length - 1];
+    // Como vienen ordenados por fecha, si es del mismo día que el último grupo va ahí.
+    if (ultimo && ultimo.fecha === gasto.fecha) {
+      ultimo.data.push(gasto);
+      ultimo.totalCentavos += gasto.montoCentavos;
+    } else {
+      grupos.push({ fecha: gasto.fecha, totalCentavos: gasto.montoCentavos, data: [gasto] });
+    }
+  }
+  return grupos;
+}

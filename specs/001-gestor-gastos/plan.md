@@ -133,4 +133,6 @@ Sigue las prioridades de la spec, para tener algo funcionando en el teléfono lo
 
 ## Seguimiento de complejidad
 
-No hay violaciones de la constitución que justificar.
+| Excepción | Por qué hace falta | Alternativa simple descartada |
+|---|---|---|
+| Librerías de diseño agregadas en T23 (FR-015): `expo-symbols`, `expo-font`, `expo-splash-screen`, `@expo-google-fonts/outfit` | El principio V pide no agregar librerías "si se puede resolver con React Native básico". Íconos del sistema y una tipografía propia **no** se pueden hacer con React Native básico. Las 4 son oficiales de Expo e incluidas en Expo Go (principio II). | Emojis como íconos (primera versión de T23): no se ven profesionales y cambian según el teléfono. Se probaron también Plus Jakarta Sans, Nunito y Fredoka antes de elegir Outfit. |

@@ -140,6 +140,19 @@
 
 ---
 
+## Fase 7b: Diseño visual (FR-015 — agregada durante el desarrollo)
+
+**Objetivo**: que la app se vea atractiva y consistente, sin cambiar lo que hace.
+
+> Se agregó después de terminar las 5 historias, a pedido del autor. Siguiendo la constitución
+> (principio I), primero se sumó FR-015 a la spec y después esta tarea. Se hace antes del cierre
+> para que la prueba completa (T21) y las capturas finales ya tengan el diseño nuevo.
+
+- [x] T23 Diseño visual y de experiencia de uso (FR-015). **Librerías** (oficiales de Expo e incluidas en Expo Go, instaladas con `npx expo install`): `expo-symbols`, `expo-font`, `expo-splash-screen` y `@expo-google-fonts/outfit`. **Sistema de diseño** en `constants/tema.ts`: `COLORES` (bosque `#1B4332`, lima `#9BE15D`, rosa `#D93650`, fondo `#F6F6F1`), `FUENTES` (Outfit), `RADIO`, `SOMBRA`, `FONDO_PRINCIPAL` (degradado) y `ESTILO_CATEGORIA` (ícono `{ ios, android }` y color por categoría). **Logo**: a partir de la imagen de la alcancía, `assets/icon.png`, `assets/splash-icon.png`, `assets/android-icon-foreground.png`, `assets/favicon.png` y `assets/logo.png` (fondo transparente); en `app.json`, `"name": "Gestor de Gastos"` y pantalla de inicio en el plugin `expo-splash-screen`. **Componentes**: `Icono` (envuelve `SymbolView`), `IconoCategoria`, `Logo`, `Encabezado` (marca, título y tarjeta verde con el total del mes). **Pantallas**: lista agrupada por día con `SectionList`, `agruparPorDia` y `fechaRelativa` ("Hoy", "Ayer", "Jueves 15 de octubre"); resumen con una fila por categoría y el porcentaje en rosa; detalle con ícono grande y botones Editar/Eliminar lado a lado; formulario con el monto grande arriba, categorías en mosaicos y campos con ícono. **Experiencia de uso**: cursor en el monto al agregar, tecla "Siguiente" entre campos, atajos "Hoy"/"Ayer" para la fecha, deslizar hacia abajo para recargar, tarjetas "fantasma" animadas mientras carga (además de "Cargando…"), efecto al tocar, y accesibilidad (contraste WCAG 4,5:1, roles y etiquetas para VoiceOver, estado "seleccionado"). **Sin emojis**, **sin cambiar** la lógica, los servicios ni las validaciones, y sin gráficos.
+  - **Verificar**: `npx tsc --noEmit` y `npx expo-doctor` sin errores, y recorrer las 4 pantallas en el teléfono (lista, detalle, formulario y resumen).
+
+---
+
 ## Fase 8: Cierre
 
 - [ ] T21 Recorrer **todos** los escenarios de [quickstart.md](quickstart.md) en el teléfono, incluido el 18 (cambiar `PROBABILIDAD_ERROR` a `1` en `services/simulacion.ts`, ver el error en cada pantalla y volver a `0`). Anotar el resultado de cada escenario en `PROCESO.md` y corregir lo que falle (cada corrección es un commit `fix:`).
@@ -202,6 +215,6 @@ Cada historia que se termina suma algo visible sin romper lo anterior:
 
 ## Resumen
 
-- **Total**: 22 tareas.
+- **Total**: 23 tareas (T23, diseño visual, se agregó durante el desarrollo).
 - **Por fase**: Preparación 3 · Base 5 · H1 3 · H2 1 · H3 4 · H4 2 · H5 2 · Cierre 2.
 - **MVP sugerido**: hasta T11 (Historia 1).

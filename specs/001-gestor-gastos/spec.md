@@ -170,6 +170,15 @@ coinciden con la suma manual de los gastos del mes.
 - **FR-013**: Toda operación de datos MUST tardar entre 0,5 y 1 segundo, simulando un servidor.
 - **FR-014**: La navegación MUST tener dos pestañas ("Gastos" y "Resumen"); el detalle y el
   formulario se abren por encima de la pestaña "Gastos" con opción de volver atrás.
+- **FR-015** *(agregado durante el desarrollo)*: La interfaz MUST tener un estilo visual
+  consistente y atractivo, definido en un único sistema de diseño (`constants/tema.ts`): paleta
+  tomada del logo (verde bosque como color principal, verde lima del billete para la acción
+  "Agregar gasto" y rosa de la alcancía para detalles), una sola tipografía (Outfit), radios y
+  sombras comunes, un ícono y un color por categoría, íconos del sistema (SF Symbols en iPhone,
+  Material Symbols en Android, con `expo-symbols`; sin emojis) y contraste de textos de al menos
+  4,5:1 (WCAG). La app tiene logo propio (una alcancía) como ícono, pantalla de inicio, en el
+  encabezado de todas las pantallas y en los estados vacíos, y se llama "Gestor de Gastos". Sin
+  gráficos (siguen fuera de alcance).
 
 ### Pantallas
 

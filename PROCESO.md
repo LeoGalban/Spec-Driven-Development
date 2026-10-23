@@ -811,18 +811,116 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/20-resumen.png" alt="Pantalla de resumen" width="250">
 
+### T21 — Prueba completa de la app (`quickstart.md`)
+
+- **Prompt:** "listo" y después "corregí todo lo que tengas que hacer".
+- **Qué hizo la IA:** revisó el código de las 5 pantallas contra la spec (sin encontrar errores de
+  funcionamiento), corrió `npx tsc --noEmit` (sin errores) y `npx expo-doctor` (20/20), y armó
+  esta tabla con el resultado de cada escenario de
+  [`quickstart.md`](specs/001-gestor-gastos/quickstart.md) y dónde está la evidencia.
+
+| # | Qué se prueba | Resultado | Evidencia |
+|---|---|---|---|
+| 1 | Primera carga: "Cargando…" y 12 ejemplos | ✅ | T07 y T11 |
+| 2 | Orden de más reciente a más antiguo | ✅ | T11 (captura de la lista) |
+| 3 | Total del mes solo suma el mes actual | ✅ | T09 (suma manual) y T11 |
+| 4 | Fila: descripción, categoría, fecha y monto | ✅ | T10 y T11 |
+| 5 | Detalle y volver con "Atrás" | ✅ | T12 |
+| 6 | Formulario vacío con la fecha de hoy | ✅ | T16 |
+| 7 | "Guardar" con todo vacío muestra errores | ✅ | T16 (captura de validación) |
+| 8 | Cada regla de validación con su mensaje | ✅ | T13 (22 casos) |
+| 9 | Corregir un campo borra su mensaje | ⏳ | — |
+| 10 | Guardar uno válido, una sola vez, y el total sube | ✅ | T16 |
+| 11 | Editar y ver el cambio en detalle y lista | ✅ | T17 |
+| 12 | "Eliminar" → "Cancelar" no hace nada | ✅ | T18 |
+| 13 | "Eliminar" → confirmar lo borra | ✅ | T18 |
+| 14 | Resumen por categoría, de mayor a menor | ✅ | T19 y T20 |
+| 15 | El resumen se actualiza al agregar un gasto | ✅ | T20 |
+| 16 | Los datos siguen al cerrar Expo Go | ⏳ | — |
+| 17 | Lista vacía y resumen vacío | ⏳ | — |
+| 18 | Estado de error y "Reintentar" | ✅ lista / ⏳ detalle y resumen | T11 |
+| 19 | Lista larga se desplaza bien (`FlatList`) | ✅ | T11 |
+
+- **Lo que no se puede probar desde la app:** el mensaje "No se encontró el gasto" (detalle y
+  formulario de edición) aparece si el servicio devuelve `null`. Desde la app no se puede llegar a
+  un gasto que no existe, porque al eliminarlo se vuelve a la lista. Se comprobó en la
+  computadora que `obtenerGasto` devuelve `null` para un id borrado (T07); el código de la
+  pantalla quedó como protección por si, por ejemplo, el gasto se borrara desde otro lugar el día
+  que haya un backend real.
+- **Qué corregimos:** nada en el código. En la documentación se completó el registro de prompts.
+
 ---
+
+### T23 — Diseño visual y experiencia de uso (FR-015, agregada durante el desarrollo)
+
+Esta tarea **no estaba en el plan original**: la pedí después de terminar las 5 historias. Siguiendo
+la constitución (principio I), antes de programar se agregó el requisito **FR-015** a la spec y la
+tarea **T23** a `tasks.md`.
+
+- **Prompts (en orden):** "Ahora quiero que la app la hagas atractiva" → "no quiero que uses emojis,
+  quiero que uses logos y uses un color, diseño y tipografía atractiva" → (imagen de una alcancía)
+  "Quiero que cuando escaneo el qr me aparezca el logo este" → "quiero que el diseño de toda la app
+  combine con ese logo y el logo también aparezca en las otras páginas" → "quiero que tenga más
+  verde que rosa" → "quiero otro diseño más atractivo con ese rosa y ese verde" → "quiero que sea
+  más atractivo para el usuario" → "quiero que el diseño ux/ui sea mejor" (elegí 4 mejoras de
+  experiencia de uso de una lista que me propuso la IA) → "las letras se ven muy grandes, la
+  tipografía ser otra más atractiva" → "una tipografía que llame la atención, también se ven muy
+  espaciados entre gastos" → "no me gusta el diseño visual en general, hacelo vos todo".
+- **Qué hizo la IA y qué fuimos corrigiendo (iteraciones):**
+  1. Primera versión con **emojis** como íconos → descartada: no se veían profesionales.
+  2. Íconos del sistema con `expo-symbols` (SF Symbols en iPhone) y tipografía Plus Jakarta Sans,
+     paleta violeta.
+  3. **Logo:** la IA recortó la imagen de la alcancía y generó el ícono (1024×1024), la pantalla de
+     inicio, el ícono de Android y una versión con fondo transparente. Descubrimos en la
+     documentación de SDK 58 que **Expo Go muestra el ícono** (no la pantalla de inicio) mientras
+     carga, así que el logo se configuró como ícono.
+  4. Paleta tomada del logo (rosa y verde), luego invertida a "más verde que rosa".
+  5. Mejoras de **experiencia de uso**: cursor en el monto, tecla "Siguiente", atajos "Hoy/Ayer",
+     deslizar para recargar, tarjetas "fantasma" al cargar y accesibilidad. La IA **midió el
+     contraste** de cada color con la fórmula WCAG y oscureció los que no llegaban a 4,5:1.
+  6. Tipografías probadas: Plus Jakarta Sans → Nunito → Fredoka + Nunito.
+  7. **Versión final**, rehecha desde cero como un *sistema de diseño* en
+     [`constants/tema.ts`](gestor-gastos/constants/tema.ts): verde bosque + lima del billete +
+     rosa de la alcancía, una sola tipografía (**Outfit**), radios y sombra comunes. Lista
+     agrupada por día ("Hoy", "Ayer", "Jueves 15 de octubre") con `SectionList`.
+- **Decisiones que revisamos:**
+  - Las librerías nuevas (`expo-symbols`, `expo-font`, `expo-splash-screen`,
+    `@expo-google-fonts/outfit`) contradicen en principio la regla "sin librerías extra"
+    (principio V). Se justificaron en el plan ("Seguimiento de complejidad"): íconos del sistema y
+    tipografías no se pueden hacer con React Native básico, y las 4 son oficiales de Expo e
+    incluidas en Expo Go.
+  - **Sin gráficos** en el resumen: siguen fuera de alcance en la spec.
+  - Las funciones nuevas de presentación (`agruparPorDia`, `fechaRelativa`, `ayer`, `mesYAnio`)
+    son puras y se probaron en la computadora.
+- **Qué aprendimos:** pedir "que sea más atractivo" sin decir qué no gusta llevó a muchas
+  vueltas. Funcionó mejor cuando la IA propuso opciones concretas para elegir y cuando definió un
+  sistema de diseño completo en vez de retocar de a partes.
+- **Cómo lo verificamos:** `npx tsc --noEmit` y `npx expo-doctor` (20/20) en cada iteración, y
+  capturas en el iPhone.
+
+  <img src="capturas/23-diseno-resumen.png" alt="Diseño final: pestaña Resumen" width="250">
 
 ## Registro de prompts generales
 
-| Etapa | Prompt utilizado (a Claude Code) | Resultado |
-|---|---|---|
-| 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | La IA propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. |
-| 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | La IA redactó un borrador de la investigación con fuentes. Lo revisamos y reescribimos con nuestras palabras. |
-| 2 | "siguiente" (continuar con la etapa 2) + los prompts de la sección 2.3 | La IA instaló Spec Kit, escribió la constitución y generó la spec. |
-| 3 | "listo" (continuar con la etapa 3) + los prompts de la sección 3.1 | La IA generó el plan técnico, los documentos de diseño y las 22 tareas; corrigió la constitución a 1.0.1 por ser trabajo individual. |
+Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos
+porque, a partir de la etapa 2, el contexto ya estaba escrito: con "listo" el agente tomaba la
+siguiente tarea de `tasks.md`, que dice qué archivo crear, qué reglas cumplir y cómo verificarlo,
+y además leía `AGENTS.md` y la constitución. **Esa es la idea de SDD:** las instrucciones
+detalladas viven en la spec, el plan y las tareas, y no hace falta repetirlas en cada mensaje.
 
----
+Igual, mirando para atrás, hay prompts que hoy escribiría mejor. Lo dejo en la última columna como
+aprendizaje.
+
+| Etapa | Prompt que usé | Qué hizo la IA | Cómo lo pediría mejor hoy |
+|---|---|---|---|
+| 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | Propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. | "Leé la consigna adjunta y proponé un plan por etapas. Quiero participar en cada paso y entender cada decisión, porque tengo que defenderla en forma oral." |
+| 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | Redactó un borrador de la investigación con fuentes, que revisé y corregí. | "Armá un borrador de la investigación con fuentes oficiales; yo lo reviso y lo reescribo con mis palabras. Avisame cuándo hacer cada commit." |
+| 1 | "quiero que sea fuentes reales, o sea que no sea de claude" | Abrió los 16 enlaces, corrigió uno roto, las apps mal citadas y agregó fuentes. | "Verificá que cada fuente exista y diga lo que citamos; corregí las que no." |
+| 2 | "siguiente" + los prompts de la sección 2.3 | Instaló Spec Kit, escribió la constitución y generó la spec. | (Los prompts de 2.3 ya eran completos.) |
+| 3 | "listo" + los prompts de la sección 3.1 | Generó el plan técnico, los documentos de diseño y las 22 tareas; ajustó la constitución a 1.0.1 por ser trabajo individual. | (Los prompts de 3.1 ya eran completos.) |
+| 4 | "listo", "soluciona eso" (con captura del error), "ya actualicé" | Creó el proyecto, configuró expo-router, escribió `AGENTS.md`/`CLAUDE.md` e instaló las skills de Expo. Resolvimos juntos: Expo Go desactualizado, la red Wi-Fi que bloquea conexiones (modo túnel) y `/plugin` no disponible en VS Code. | "Al escanear el QR, Expo Go muestra este error (adjunto captura). Explicame la causa y cómo lo soluciono." |
+| 5 | "listo" para pasar a cada tarea (T04–T20) | Implementó una tarea por vez, la probó en la computadora cuando se podía y me pidió la prueba en el teléfono; lo de cada tarea está en la sección 5. | "Hacé la tarea T07 de `tasks.md`. Antes de escribir el código, explicame qué vas a hacer; después decime cómo la pruebo en el teléfono." |
+| 5 | "corregí todo lo que tengas que hacerlo" | Revisó todo el código contra la spec, corrió los controles y completó la documentación pendiente (T21). | "Revisá todo el código contra la spec y el quickstart, corré los controles y decime qué falta probar en el teléfono." |
 
 ## 6. Conclusiones
 
