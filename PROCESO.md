@@ -569,6 +569,36 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/10-tarjeta-gasto.png" alt="Tarjetas de gasto" width="250">
 
+### T11 — Pantalla de lista de gastos (MVP)
+
+- **Prompt:** "listo" (continuar con la tarea T11 de `tasks.md`).
+- **Qué hizo la IA:**
+  1. Antes de escribir, revisó en la documentación de expo-router de SDK 58 (en
+     `node_modules/expo-router`) cómo se usa `useFocusEffect`: hay que envolver la función en
+     `useCallback`.
+  2. Reescribió [`app/(tabs)/index.tsx`](gestor-gastos/app/(tabs)/index.tsx): carga los gastos
+     con `obtenerGastos()` dentro de `useFocusEffect` (se ejecuta cada vez que la pantalla vuelve a
+     verse), guarda el resultado en `useState` y muestra, en este orden: error con "Reintentar",
+     "Cargando…" (mientras `gastos` es `null`), "Todavía no cargaste gastos" (lista vacía) o el
+     total del mes arriba + `FlatList` de `TarjetaGasto`.
+- **Decisiones que revisamos:**
+  - `gastos` empieza en `null` y no en `[]`: así se distingue "todavía no llegaron los datos"
+    (carga) de "llegaron y no hay ninguno" (vacío).
+  - `FlatList` en vez de `ScrollView`: solo dibuja las filas visibles, así una lista larga no se
+    traba (caso borde de la spec).
+  - El total va en `ListHeaderComponent` para que se desplace junto con la lista.
+  - Tocar una tarjeta todavía no hace nada; el detalle se agrega en T12. El botón "Agregar gasto"
+    se agrega en T16, como indica `tasks.md`.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos (escenarios de `quickstart.md`):**
+  - 1, 2, 3, 4 y 19: se ve "Cargando…", después el total **$ 127.351,25** (coincide con la suma
+    de T09) y los 12 gastos del más nuevo al más viejo; la lista se desplaza bien.
+  - 18 (error): con `PROBABILIDAD_ERROR = 1` aparece "Algo salió mal" y "Reintentar"; al volver a
+    `0` y tocar "Reintentar", la lista vuelve.
+
+  <img src="capturas/11-lista-gastos.png" alt="Lista de gastos" width="250">
+  <img src="capturas/11-error.png" alt="Estado de error" width="250">
+
 ---
 
 ## Registro de prompts generales
