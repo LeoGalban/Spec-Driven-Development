@@ -675,6 +675,33 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/14-selector-categoria.png" alt="Selector de categoría" width="250">
 
+### T15 — Formulario para agregar un gasto (`app/gasto/formulario.tsx`)
+
+- **Prompt:** "listo" (continuar con la tarea T15 de `tasks.md`).
+- **Qué hizo la IA:** creó [`app/gasto/formulario.tsx`](gestor-gastos/app/gasto/formulario.tsx)
+  (título "Nuevo gasto" en `app/_layout.tsx`):
+  - Guarda todo lo escrito en **un solo objeto** `valores` (`useState<ValoresFormulario>`); la
+    función `cambiar(campo, valor)` actualiza un campo y deja los demás igual. La fecha empieza
+    con la de hoy.
+  - Un componente `Campo` (etiqueta + `TextInput` + mensaje de error en rojo) que se repite para
+    descripción, monto (teclado numérico), fecha y nota (multilínea), y el `SelectorCategoria`.
+  - Al tocar "Guardar": `validarGasto`; si hay errores los muestra y no guarda; si no, deshabilita
+    el botón ("Guardando…"), llama a `crearGasto` con los datos convertidos (`trim`,
+    `textoACentavos`, `fechaAGuardar`) y vuelve con `router.back()`. Si el servicio falla,
+    muestra el error arriba del botón y lo vuelve a habilitar.
+- **Decisiones que revisamos:**
+  - **Doble toque en "Guardar"** (caso borde de la spec): además de deshabilitar el botón se usa
+    `useRef`. `useState` recién cambia en el siguiente dibujo de la pantalla, así que dos toques
+    muy rápidos podrían pasar los dos; `useRef` cambia al instante.
+  - `valores.categoria!`: el `!` le dice a TypeScript "acá no es `null`". Es seguro porque
+    `validarGasto` ya lo comprobó antes.
+  - Por lo aprendido en T12, el `ScrollView` lleva `contentInsetAdjustmentBehavior="automatic"`
+    (encabezado transparente de iOS) y `automaticallyAdjustKeyboardInsets` (que el teclado no tape
+    el campo).
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores. Todavía no hay un botón que lleve a
+  esta pantalla: la prueba completa en el teléfono se hace en T16 (como indica `tasks.md`).
+
 ---
 
 ## Registro de prompts generales

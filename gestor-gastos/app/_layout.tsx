@@ -9,6 +9,7 @@ export default function LayoutRaiz() {
       {/* Las pestañas tienen su propio encabezado, por eso se oculta el de la pila */}
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="gasto/[id]" options={{ title: 'Detalle' }} />
+      <Stack.Screen name="gasto/formulario" options={{ title: 'Nuevo gasto' }} />
     </Stack>
   );
 }
