@@ -658,6 +658,23 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   201 caracteres; y los límites que sí valen: 50 caracteres, `10000000`, 200 caracteres de nota y
   `29/02/2024` (año bisiesto). En el teléfono se ve en T16, cuando el formulario esté conectado.
 
+### T14 — Selector de categoría (`components/SelectorCategoria.tsx`)
+
+- **Prompt:** "listo" (continuar con la tarea T14 de `tasks.md`).
+- **Qué hizo la IA:** creó [`components/SelectorCategoria.tsx`](gestor-gastos/components/SelectorCategoria.tsx):
+  recorre `CATEGORIAS` con `.map()` y dibuja un `Pressable` por categoría; el elegido se pinta de
+  azul. Con `flexWrap: 'wrap'` los botones que no entran pasan a la fila de abajo.
+- **Decisiones que revisamos:** es un componente **controlado**: no guarda cuál está elegida, la
+  recibe en `valor` y avisa los cambios con `alCambiar`. La categoría la guarda la pantalla del
+  formulario, que la necesita para validar y guardar. Se usan botones y no un menú desplegable
+  porque son solo 6 opciones fijas y así no hace falta otra librería (`research.md` §12).
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y una prueba **temporal** en la pestaña
+  Resumen: al tocar "Salud" se resalta y al tocar "Ocio" se resalta Ocio y Salud vuelve a blanco
+  (solo una elegida). Después se dejó la pantalla como estaba.
+
+  <img src="capturas/14-selector-categoria.png" alt="Selector de categoría" width="250">
+
 ---
 
 ## Registro de prompts generales
