@@ -429,6 +429,21 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   de Expo que el agente también tiene que leer.
 - **Cómo lo verificamos:** comparamos `AGENTS.md` con la constitución, regla por regla.
 
+### T04 — Tipos de datos (`types/gasto.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T04 de `tasks.md`; la tarea ya detalla cada tipo).
+- **Qué hizo la IA:** creó [`gestor-gastos/types/gasto.ts`](gestor-gastos/types/gasto.ts) con:
+  - `Categoria`: las 6 categorías fijas como tipo (`'Comida' | 'Transporte' | ...`), así TypeScript
+    marca error si se escribe una categoría que no existe.
+  - `CATEGORIAS`: la misma lista como arreglo, para dibujar los botones del formulario.
+  - `Gasto`: lo que se guarda (monto en centavos enteros y fecha `AAAA-MM-DD`).
+  - `DatosGasto`: un `Gasto` sin `id` (`Omit<Gasto, 'id'>`), porque el `id` lo pone el servicio.
+  - `ValoresFormulario` y `ErroresFormulario`: lo que se escribe en el formulario (todo texto) y
+    un mensaje de error por campo.
+- **Qué corregimos:** nada; coincide con `data-model.md`.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores. Esta tarea no cambia nada visible: en el
+  teléfono la app sigue abriendo igual.
+
 ---
 
 ## Registro de prompts generales
