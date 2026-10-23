@@ -537,6 +537,20 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 
   <img src="capturas/08-componentes-estado.png" alt="Los tres estados" width="250">
 
+### T09 — Total del mes (`utils/calculos.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T09 de `tasks.md`).
+- **Qué hizo la IA:** creó [`utils/calculos.ts`](gestor-gastos/utils/calculos.ts) con
+  `totalDelMes(gastos)`: recorre la lista con un `for` y suma `montoCentavos` solo de los gastos
+  cuya fecha empieza con el `AAAA-MM` de hoy (por ejemplo `"2026-10"`).
+- **Decisiones que revisamos:** se usa un `for` común en vez de `filter` + `reduce` porque es más
+  fácil de leer y explicar. Comparar el texto de la fecha (`startsWith`) funciona gracias a que las
+  fechas se guardan como `AAAA-MM-DD`.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y, en la computadora, con los datos de
+  ejemplo: `totalDelMes` dio **$ 127.351,25**, igual a la suma manual de los 7 gastos del mes; con
+  la lista vacía da 0 y con solo gastos del mes anterior da 0. En el teléfono se ve en T11.
+
 ---
 
 ## Registro de prompts generales

@@ -69,7 +69,7 @@
 **Prueba independiente**: abrir la app y comprobar lista, orden y total (escenarios 1–4 de
 [quickstart.md](quickstart.md)).
 
-- [ ] T09 [P] [H1] Crear `utils/calculos.ts` con `totalDelMes(gastos: Gasto[]): number` que sume `montoCentavos` solo de los gastos cuya `fecha` empieza con el `AAAA-MM` de `hoy()` (FR-002).
+- [x] T09 [P] [H1] Crear `utils/calculos.ts` con `totalDelMes(gastos: Gasto[]): number` que sume `montoCentavos` solo de los gastos cuya `fecha` empieza con el `AAAA-MM` de `hoy()` (FR-002).
   - **Verificar**: `npx tsc --noEmit` sin errores (se ve funcionando en T11).
 - [ ] T10 [P] [H1] Crear `components/TarjetaGasto.tsx`: recibe un `gasto` y `alPresionar`; muestra descripción, categoría, fecha con `fechaAMostrar` y monto con `formatearPesos`. Usa `Pressable`.
   - **Verificar**: `npx tsc --noEmit` sin errores (se ve en T11).
