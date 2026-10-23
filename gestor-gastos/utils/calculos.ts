@@ -1,5 +1,6 @@
 import { Categoria, Gasto } from '../types/gasto';
 import { hoy } from './formato';
+import { estaEnPeriodo, Periodo } from './periodos';
 
 // Cálculos sobre la lista de gastos. Son funciones puras: no guardan ni leen datos,
 // solo trabajan con la lista que reciben.
@@ -29,16 +30,26 @@ export type ResumenCategoria = {
   porcentaje: number; // redondeado a entero: 35 significa 35 %
 };
 
-// Total y porcentaje por categoría del mes actual, de mayor a menor (FR-010).
+// Suma, en centavos, de los gastos de un período (semana o mes) (FR-010, FR-017).
+export function totalEnPeriodo(gastos: Gasto[], periodo: Periodo): number {
+  let total = 0;
+  for (const gasto of gastos) {
+    if (estaEnPeriodo(gasto.fecha, periodo)) {
+      total += gasto.montoCentavos;
+    }
+  }
+  return total;
+}
+
+// Total y porcentaje por categoría de un período (semana o mes), de mayor a menor (FR-010).
 // Agrupa por el nombre de la categoría de cada gasto, así sirve para las 6 fijas y para las que
-// crea el usuario. Solo aparecen las categorías que tienen gastos este mes.
-export function resumenPorCategoria(gastos: Gasto[]): ResumenCategoria[] {
-  const mes = mesActual();
-  const totalMes = totalDelMes(gastos);
+// crea el usuario. Solo aparecen las categorías que tienen gastos en el período.
+export function resumenPorCategoria(gastos: Gasto[], periodo: Periodo): ResumenCategoria[] {
+  const totalPeriodo = totalEnPeriodo(gastos, periodo);
   const resumen: ResumenCategoria[] = [];
 
   for (const gasto of gastos) {
-    if (!gasto.fecha.startsWith(mes)) continue; // solo los del mes
+    if (!estaEnPeriodo(gasto.fecha, periodo)) continue; // solo los del período
     // ¿Ya hay una fila para esta categoría? Si no, se crea.
     let fila = resumen.find((f) => f.categoria === gasto.categoria);
     if (!fila) {
@@ -48,9 +59,9 @@ export function resumenPorCategoria(gastos: Gasto[]): ResumenCategoria[] {
     fila.totalCentavos += gasto.montoCentavos;
   }
 
-  // Con los totales ya sumados se calcula qué parte del mes es cada categoría.
+  // Con los totales ya sumados se calcula qué parte del período es cada categoría.
   for (const fila of resumen) {
-    fila.porcentaje = Math.round((fila.totalCentavos * 100) / totalMes);
+    fila.porcentaje = Math.round((fila.totalCentavos * 100) / totalPeriodo);
   }
 
   // sort con (a, b) => b - a ordena de mayor a menor.

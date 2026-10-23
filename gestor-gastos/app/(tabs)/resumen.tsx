@@ -13,6 +13,7 @@ import { obtenerGastos } from '../../services/gastos';
 import { Gasto, InfoCategoria } from '../../types/gasto';
 import { resumenPorCategoria, totalDelMes } from '../../utils/calculos';
 import { formatearPesos, hoy, mesYAnio } from '../../utils/formato';
+import { periodoMes } from '../../utils/periodos';
 
 // Pantalla 4: cuánto se gastó este mes en cada categoría (Historia 5).
 // Es una lista con totales y porcentajes: los gráficos quedaron fuera de alcance en la spec.
@@ -61,7 +62,7 @@ export default function PantallaResumen() {
     return <Cargando />;
   }
 
-  const resumen = resumenPorCategoria(gastos);
+  const resumen = resumenPorCategoria(gastos, periodoMes(0)); // el mes actual
   if (resumen.length === 0) {
     return <MensajeVacio mensaje="No hay gastos este mes" />;
   }

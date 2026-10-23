@@ -969,6 +969,27 @@ tarea **T23** a `tasks.md`.
   el resumen con una categoría creada ("Mascotas") suma exactamente el total del mes. En el
   teléfono: escenarios 20–23 de `quickstart.md`.
 
+### T26 — Semanas y meses (`utils/periodos.ts`, Historia 7)
+
+- **Prompt:** "donde vea los resúmenes semanales y mensuales de las categorías" y después "listo".
+- **Qué hizo la IA:**
+  - [`utils/periodos.ts`](gestor-gastos/utils/periodos.ts): el tipo `Periodo` (`desde`, `hasta`,
+    `titulo`), `periodoMes(mesesAtras)`, `periodoSemana(semanasAtras)` (de lunes a domingo) y
+    `estaEnPeriodo(fecha, periodo)`.
+  - [`utils/calculos.ts`](gestor-gastos/utils/calculos.ts): `totalEnPeriodo(gastos, periodo)` y
+    `resumenPorCategoria(gastos, periodo)`, que ahora recibe el período. La pantalla de resumen
+    le pasa por ahora el mes actual (`periodoMes(0)`); el selector llega en T27.
+- **Decisiones que revisamos:** para encontrar el lunes se usa `(getDay() + 6) % 7`, que da
+  cuántos días pasaron desde el lunes (JavaScript cuenta el domingo como 0). Los cambios de mes y
+  de año los resuelve `new Date` solo (por ejemplo, el día 0 de un mes es el último del anterior).
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y, en la computadora, simulando distintas
+  fechas como "hoy": viernes 23/10 → semana 19/10 al 25/10; domingo 25/10 → misma semana; lunes
+  26/10 → 26/10 al 01/11 (cruza el mes); 1/1/2027 → 28/12 al 03/01 (cruza el año); marzo de 2028 →
+  el mes anterior termina el 29/02 (año bisiesto). El total del mes por período coincide con
+  `totalDelMes`, la suma por categoría del mes anterior coincide con su total, y un período sin
+  gastos da una lista vacía.
+
 ## Registro de prompts generales
 
 Estos son los mensajes **tal como los escribí** a Claude Code (extensión de VS Code). Son cortos
