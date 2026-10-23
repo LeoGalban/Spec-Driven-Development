@@ -1,6 +1,6 @@
 import { router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import Cargando from '../../components/Cargando';
 import MensajeError from '../../components/MensajeError';
@@ -10,6 +10,11 @@ import { obtenerGastos } from '../../services/gastos';
 import { Gasto } from '../../types/gasto';
 import { totalDelMes } from '../../utils/calculos';
 import { formatearPesos } from '../../utils/formato';
+
+// Abre el formulario vacío para cargar un gasto nuevo (Historia 3).
+function irAAgregar() {
+  router.push('/gasto/formulario');
+}
 
 // Pantalla 1: lista de gastos con el total del mes (Historia 1).
 export default function PantallaGastos() {
@@ -41,18 +46,27 @@ export default function PantallaGastos() {
     return <Cargando />;
   }
   if (gastos.length === 0) {
-    return <MensajeVacio mensaje="Todavía no cargaste gastos" />;
+    return (
+      <MensajeVacio
+        mensaje="Todavía no cargaste gastos"
+        textoBoton="Agregar gasto"
+        alPresionar={irAAgregar}
+      />
+    );
   }
 
   return (
     <FlatList
       data={gastos}
       keyExtractor={(gasto) => gasto.id}
-      // Lo que va arriba de la lista: el total del mes.
+      // Lo que va arriba de la lista: el total del mes y el botón para agregar.
       ListHeaderComponent={
-        <View style={styles.total}>
+        <View style={styles.encabezado}>
           <Text style={styles.totalTitulo}>Total de este mes</Text>
           <Text style={styles.totalMonto}>{formatearPesos(totalDelMes(gastos))}</Text>
+          <Pressable style={styles.botonAgregar} onPress={irAAgregar}>
+            <Text style={styles.textoBotonAgregar}>+ Agregar gasto</Text>
+          </Pressable>
         </View>
       }
       renderItem={({ item }) => (
@@ -68,7 +82,7 @@ const styles = StyleSheet.create({
   lista: {
     paddingBottom: 16,
   },
-  total: {
+  encabezado: {
     alignItems: 'center',
     paddingVertical: 20,
   },
@@ -81,5 +95,17 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: '700',
     color: '#222',
+  },
+  botonAgregar: {
+    marginTop: 16,
+    backgroundColor: '#007AFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  textoBotonAgregar: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

@@ -702,6 +702,28 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
 - **Cómo lo verificamos:** `npx tsc --noEmit` sin errores. Todavía no hay un botón que lleve a
   esta pantalla: la prueba completa en el teléfono se hace en T16 (como indica `tasks.md`).
 
+### T16 — Botón "Agregar gasto" (y prueba completa del formulario)
+
+- **Prompt:** "listo" (continuar con la tarea T16 de `tasks.md`).
+- **Qué hizo la IA:** en [`app/(tabs)/index.tsx`](gestor-gastos/app/(tabs)/index.tsx) agregó la
+  función `irAAgregar()` (`router.push('/gasto/formulario')`) y la usa en dos lugares: un botón
+  **"+ Agregar gasto"** debajo del total del mes, y el botón del estado vacío ("Todavía no
+  cargaste gastos" → "Agregar gasto"), que pide la Historia 1.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos (escenarios 6 a 10 de `quickstart.md`, en el iPhone):**
+  - **6:** "+ Agregar gasto" abre "Nuevo gasto" con la fecha de hoy ya escrita.
+  - **7:** con todo vacío, "Guardar" no guarda y muestra 4 mensajes en rojo (descripción, monto,
+    categoría y fecha), con el borde de cada campo en rojo.
+  - **10:** se cargó un gasto real ("Crossfit", $ 50.000, Otros, nota "Box"): aparece **primero y
+    una sola vez**, el total pasó de $ 127.351,25 a **$ 177.351,25** (justo $ 50.000 más) y el
+    detalle muestra todos los datos.
+  - **8:** los mensajes de cada regla ya se habían probado en T13 con 22 casos.
+
+  <img src="capturas/16-boton-agregar.png" alt="Botón Agregar gasto" width="200">
+  <img src="capturas/16-formulario.png" alt="Formulario vacío" width="200">
+  <img src="capturas/16-validacion.png" alt="Mensajes de validación" width="200">
+  <img src="capturas/16-gasto-guardado.png" alt="Gasto guardado en la lista" width="200">
+
 ---
 
 ## Registro de prompts generales

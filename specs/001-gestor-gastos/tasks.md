@@ -109,7 +109,7 @@
 - [x] T15 [H3] Crear `app/gasto/formulario.tsx` en **modo alta** (sin parámetro `id`), con título "Nuevo gasto": `TextInput` para descripción, monto (`keyboardType="decimal-pad"`), fecha (empieza con `fechaAMostrar(hoy())`) y nota (multilínea); `SelectorCategoria`; debajo de cada campo, su mensaje de error en rojo. Al tocar "Guardar": `validarGasto`; si hay errores los muestra y no guarda; si no, pone `guardando = true` (botón deshabilitado con texto "Guardando…", así un doble toque no crea dos gastos), llama a `crearGasto` con `descripcion.trim()`, `textoACentavos(monto)` y `fechaAGuardar(fecha)`, y vuelve con `router.back()`. Si `crearGasto` falla, muestra el mensaje arriba del botón y vuelve a habilitarlo. Usar `ScrollView` con `keyboardShouldPersistTaps="handled"`.
   - **Verificar**: `npx tsc --noEmit` sin errores. Todavía no hay botón para llegar a esta
     pantalla: se prueba completa en el teléfono en T16.
-- [ ] T16 [H3] En `app/(tabs)/index.tsx` agregar el botón "Agregar gasto" (arriba de la lista) y el botón de `MensajeVacio`, ambos con `router.push('/gasto/formulario')`.
+- [x] T16 [H3] En `app/(tabs)/index.tsx` agregar el botón "Agregar gasto" (arriba de la lista) y el botón de `MensajeVacio`, ambos con `router.push('/gasto/formulario')`.
   - **Verificar**: escenarios 6, 7, 8, 9 y 10 de [quickstart.md](quickstart.md).
 
 ---
