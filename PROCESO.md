@@ -599,6 +599,12 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   <img src="capturas/11-lista-gastos.png" alt="Lista de gastos" width="250">
   <img src="capturas/11-error.png" alt="Estado de error" width="250">
 
+- **Qué salió mal después:** el commit de T11 se hizo con `PROBABILIDAD_ERROR = 1` (el archivo
+  quedó así después de la prueba del error), así que la app fallaba siempre. Lo detectamos al
+  revisar el commit (`git show --stat` mostraba `simulacion.ts` modificado) y lo corregimos con un
+  commit `fix:` que lo vuelve a `0`. **Aprendizaje:** antes de cada commit, mirar `git status` y
+  revisar que no se cuelen cambios de prueba.
+
 ---
 
 ## Registro de prompts generales
