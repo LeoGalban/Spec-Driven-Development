@@ -44,7 +44,7 @@ pantallas no cambian.
 
 ### V. Simple y explicable
 
-- El código tiene que poder ser explicado línea por línea por cualquiera de los dos integrantes.
+- El código tiene que poder ser explicado línea por línea por el autor del proyecto.
 - Se prefiere código directo antes que abstracciones "inteligentes". Nada de librerías extra
   (estado global, formularios, UI) si se puede resolver con React y React Native básicos.
 - Estado con `useState`/`useEffect`; estilos con `StyleSheet`.
@@ -57,7 +57,6 @@ pantallas no cambian.
 - Se trabaja una tarea de `tasks.md` por vez.
 - Cada tarea termina cuando se probó en el teléfono con Expo Go.
 - Un commit por tarea, con el formato `feat: T07 - pantalla de detalle` (o `fix:`, `docs:`, `chore:`).
-- Los dos integrantes commitean.
 
 **Por qué:** el historial de Git es parte de la evidencia que se evalúa.
 
@@ -67,7 +66,8 @@ pantallas no cambian.
   (sin tildes ni ñ en los identificadores: `obtenerGastos`, `anio`). Los textos de la interfaz en
   español con tildes.
 - **Archivos:** pantallas en `app/` (expo-router); componentes reutilizables en `components/`
-  con nombre en PascalCase (`TarjetaGasto.tsx`); servicios en `services/`; tipos en `types/`.
+  con nombre en PascalCase (`TarjetaGasto.tsx`); servicios en `services/`; funciones puras (formato,
+  validación, cálculos) en `utils/`; tipos en `types/`.
 - **Comentarios:** solo donde el *por qué* no es obvio. Cada archivo de `services/` explica qué
   simula.
 - **Formato:** el que trae el proyecto de Expo (Prettier/ESLint por defecto).
@@ -85,10 +85,13 @@ pantallas no cambian.
 
 - Esta constitución está por encima de cualquier otra decisión del proyecto. Si un pedido a la IA
   la contradice, gana la constitución.
-- Para cambiarla: se acuerda entre los dos integrantes, se edita este archivo, se sube la versión y
+- Para cambiarla: se edita este archivo, se sube la versión y
   se registra el cambio en `PROCESO.md`.
 - Versionado: MAYOR = se quita o redefine un principio; MENOR = se agrega un principio o sección;
   PARCHE = aclaraciones de redacción.
 - `AGENTS.md` resume estas reglas para el agente de IA y se mantiene sincronizado con este archivo.
 
-**Versión**: 1.0.0 | **Ratificada**: 2026-10-23 | **Última modificación**: 2026-10-23
+**Versión**: 1.0.1 | **Ratificada**: 2026-10-23 | **Última modificación**: 2026-10-23
+
+_1.0.1 (PARCHE): el trabajo es individual (se quitan las menciones a "dos integrantes") y se
+agrega la carpeta `utils/` a las convenciones._

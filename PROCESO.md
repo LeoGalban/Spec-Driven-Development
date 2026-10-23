@@ -228,10 +228,55 @@ Decisiones que tomamos para **recortar** y **concretar** la spec:
 ## 3. Plan técnico y tareas
 
 ### 3.1 Prompts usados
-_(pendiente)_
+
+| Paso | Prompt |
+|---|---|
+| Plan técnico (`/speckit-plan`) | "Expo SDK actual + expo-router (navegación por archivos, Stack) + TypeScript. Sin backend: servicio mock en `services/gastos.ts` con funciones async y latencia simulada de 500-1000 ms, persistencia con `@react-native-async-storage/async-storage` (incluida en Expo Go). Sin librerías extra de estado, UI ni formularios: `useState`/`useEffect` y `StyleSheet`. Validación del formulario hecha a mano en una función pura. Debe correr en Expo Go. Código y comentarios en español." |
+| Tareas (`/speckit-tasks`) | "Tareas chicas (una tarea = un commit = algo que se prueba en el teléfono). Sin tareas de tests automáticos. Numeradas T01, T02... Agrupadas por historia de usuario en orden de prioridad." |
+
+Spec Kit generó, en [`specs/001-gestor-gastos/`](specs/001-gestor-gastos/):
+
+| Archivo | Para qué sirve |
+|---|---|
+| [`plan.md`](specs/001-gestor-gastos/plan.md) | El *cómo*: versiones, estructura de carpetas, verificación contra la constitución y orden de construcción. |
+| [`research.md`](specs/001-gestor-gastos/research.md) | 13 decisiones técnicas, cada una con su motivo y las alternativas descartadas. |
+| [`data-model.md`](specs/001-gestor-gastos/data-model.md) | Los tipos de datos, las reglas de validación con sus mensajes y cómo se guarda todo. |
+| [`contracts/`](specs/001-gestor-gastos/contracts/) | Las funciones del servicio mock y el mapa de pantallas/rutas con sus estados. |
+| [`quickstart.md`](specs/001-gestor-gastos/quickstart.md) | Cómo correr la app y 19 pruebas manuales para hacer en el teléfono. |
+| [`tasks.md`](specs/001-gestor-gastos/tasks.md) | 22 tareas (T01–T22) agrupadas por historia, cada una con su forma de verificarla. |
+
+**Decisiones técnicas más importantes** (detalle en `research.md`):
+
+- **Expo SDK 58** con la plantilla `blank-typescript`, en la carpeta `gestor-gastos/` (separada de
+  la documentación).
+- **Navegación:** un `Stack` con dos pestañas adentro; el detalle y el formulario se abren encima.
+- **Un solo formulario** para agregar y editar (si recibe un `id`, edita).
+- **Montos en centavos enteros** (`150050` = `$ 1.500,50`), porque en JavaScript `0.1 + 0.2` no da
+  exactamente `0.3` y los totales tienen que coincidir al centavo.
+- **Fechas guardadas como `AAAA-MM-DD`**, que se ordenan bien como texto.
+- **Simular el error:** una constante `PROBABILIDAD_ERROR` en `services/simulacion.ts`; se cambia a
+  `1` para mostrar el estado de error en la demo.
+- **Datos de ejemplo según la fecha de hoy**, para que el total del mes nunca dé $ 0.
 
 ### 3.2 Qué corregimos del plan y de las tareas
-_(pendiente)_
+
+- **Plantilla `blank-typescript` en vez de la `default`:** la de ejemplo trae pestañas, temas y
+  componentes que no vamos a usar. Preferimos empezar vacíos y agregar cada archivo sabiendo para
+  qué está.
+- **Datos de ejemplo relativos a hoy:** con fechas fijas, al mes siguiente la lista no tendría
+  gastos "de este mes" y no se podría probar el total ni el resumen.
+- **Sin tests automáticos:** la constitución dice que una tarea se termina al probarla en el
+  teléfono. En su lugar, `quickstart.md` tiene 19 pruebas manuales con el resultado esperado.
+- **Sin selector de fecha ni de categoría de librerías externas:** la fecha es un campo de texto
+  (así se puede probar la validación `31/02/2026`) y las categorías son 6 botones.
+- **Tareas chicas y verificables:** cada tarea dice en qué archivo se trabaja y cómo se prueba en el
+  teléfono, para poder hacer un commit por tarea.
+- **Constitución 1.0.1:** decía "los dos integrantes", pero el trabajo es individual. Se corrigió
+  esa redacción y se agregó la carpeta `utils/` (funciones de formato, validación y cálculos) a las
+  convenciones.
+
+> ✏️ **Revisión personal:** _(completar al leer `plan.md` y `tasks.md`: qué cambié a mano o qué
+> me pareció que sobraba o faltaba)._
 
 ---
 
@@ -263,6 +308,7 @@ _(pendiente)_
 | 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | La IA propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. |
 | 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | La IA redactó un borrador de la investigación con fuentes. Lo revisamos y reescribimos con nuestras palabras. |
 | 2 | "siguiente" (continuar con la etapa 2) + los prompts de la sección 2.3 | La IA instaló Spec Kit, escribió la constitución y generó la spec. |
+| 3 | "listo" (continuar con la etapa 3) + los prompts de la sección 3.1 | La IA generó el plan técnico, los documentos de diseño y las 22 tareas; corrigió la constitución a 1.0.1 por ser trabajo individual. |
 
 ---
 
