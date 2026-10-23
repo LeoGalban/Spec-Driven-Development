@@ -34,7 +34,7 @@
   - **Verificar**: `cd gestor-gastos` + `npx expo start`, escanear el QR con Expo Go y ver la pantalla inicial de la plantilla. Sacar captura para `PROCESO.md` §4.3.
 - [x] T02 Instalar y configurar expo-router siguiendo la guía de instalación manual de la documentación de Expo: `npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar`; en `package.json` poner `"main": "expo-router/entry"`; en `app.json` agregar `"scheme": "gestorgastos"`; borrar `App.tsx` e `index.ts`. Crear `app/_layout.tsx` con un `Stack` cuya pantalla `(tabs)` no muestre encabezado (`headerShown: false`), `app/(tabs)/_layout.tsx` con `Tabs` de dos pestañas (`index` con título "Gastos" y `resumen` con título "Resumen"), y `app/(tabs)/index.tsx` y `app/(tabs)/resumen.tsx` que solo muestren un texto con su nombre.
   - **Verificar**: en el teléfono se ven las dos pestañas y se puede pasar de una a otra.
-- [ ] T03 Crear `AGENTS.md` en la **raíz del repositorio** con el resumen de la constitución para el agente de IA (stack, carpetas, idioma, "datos solo por `services/`", estados de carga/vacío/error, una tarea por vez) y `CLAUDE.md` en la raíz con una sola línea que indique leer `AGENTS.md`.
+- [x] T03 Crear `AGENTS.md` en la **raíz del repositorio** con el resumen de la constitución para el agente de IA (stack, carpetas, idioma, "datos solo por `services/`", estados de carga/vacío/error, una tarea por vez) y `CLAUDE.md` en la raíz con una sola línea que indique leer `AGENTS.md`.
   - **Verificar**: abrir los archivos y comprobar que coinciden con `.specify/memory/constitution.md`.
 
 **Punto de control**: la app abre en Expo Go con dos pestañas vacías.
@@ -144,7 +144,7 @@
 
 - [ ] T21 Recorrer **todos** los escenarios de [quickstart.md](quickstart.md) en el teléfono, incluido el 18 (cambiar `PROBABILIDAD_ERROR` a `1` en `services/simulacion.ts`, ver el error en cada pantalla y volver a `0`). Anotar el resultado de cada escenario en `PROCESO.md` y corregir lo que falle (cada corrección es un commit `fix:`).
   - **Verificar**: los 19 escenarios dan el resultado esperado.
-- [ ] T22 Completar `PROCESO.md` (en la raíz del repositorio): capturas de las 4 pantallas y de los estados de carga, vacío y error; lo que haya quedado fuera de la spec y por qué (constitución, principio I); y la sección de conclusiones.
+- [ ] T22 Crear `README.md` en la raíz del repositorio con instrucciones para correr el proyecto (requisitos, `npm install`, `npx expo start --tunnel`, Expo Go; lo pide la consigna para la entrega). Completar `PROCESO.md` (en la raíz del repositorio): capturas de las 4 pantallas y de los estados de carga, vacío y error; lo que haya quedado fuera de la spec y por qué (constitución, principio I); y la sección de conclusiones.
   - **Verificar**: releer el documento completo.
 
 ---

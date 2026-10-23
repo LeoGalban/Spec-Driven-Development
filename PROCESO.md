@@ -335,7 +335,39 @@ Después de actualizar, la app empezó a cargar pero se cortó con ese error.
 - **Aprendizaje:** antes de volver a ejecutar `npx expo start`, cortar el anterior con `Ctrl + C`.
 
 ### 4.2 Skills encontradas e instaladas
-_(pendiente)_
+
+| Skill / plugin | De dónde sale | Para qué la usamos |
+|---|---|---|
+| **Spec Kit** (`speckit-specify`, `speckit-plan`, `speckit-tasks`, `speckit-implement`, etc.) | Las instaló `specify init` en `.claude/skills/` (ver 2.0) | Cada paso del flujo SDD. |
+| **Skills oficiales de Expo**: `expo-overview`, `expo-router`, `expo-upgrade` | Repositorio del equipo de Expo: https://github.com/expo/skills (licencia MIT), versión del 22/10/2026 (commit `0d03555`) | Que el agente consulte guías actualizadas de Expo en vez de "recordar" APIs viejas: `expo-overview` decide qué guía usar y da reglas generales (por ejemplo, instalar con `npx expo install`); `expo-router` cubre navegación; `expo-upgrade` sirve para problemas de versiones del SDK. |
+
+**Cómo las encontramos:** la plantilla de `create-expo-app` (SDK 58) trae activado en
+`gestor-gastos/.claude/settings.json` el **plugin oficial de Expo** del catálogo de plugins de
+Claude Code. Ese plugin agrupa 23 skills del repositorio `expo/skills`. Elegimos solo 3: las demás
+son de servicios pagos de Expo (EAS: publicar en tiendas, actualizaciones en la nube) o de temas que
+no usamos (animaciones, módulos nativos, Tailwind, etc.).
+
+**Cómo las instalamos:**
+1. **Intento 1 — plugin:** en el chat de Claude Code escribimos
+   `/plugin install expo@claude-plugins-official`. Respuesta: *"/plugin isn't available in this
+   environment"*: la extensión de VS Code no tiene ese comando (sí la versión de terminal).
+   *(Antes lo habíamos escrito por error en la terminal de PowerShell, que no lo reconoce.)*
+2. **Intento 2 — copiar las carpetas (funcionó):** la IA descargó el repositorio `expo/skills` en
+   una carpeta temporal, **leímos los `SKILL.md` antes de instalarlos** (son solo instrucciones de
+   texto, sin scripts) y copiamos las 3 carpetas a `.claude/skills/`. Se borró la subcarpeta
+   `agents/` de cada una, que es configuración para otro agente (Codex de OpenAI).
+
+**Qué encontramos al leerlas — choques con nuestra constitución:**
+
+| La skill dice… | Nuestra decisión | Por qué |
+|---|---|---|
+| Nombres de archivo en *kebab-case* (`tarjeta-gasto.tsx`) | Mantenemos PascalCase (`TarjetaGasto.tsx`) | Lo dice la constitución y ya está en el plan. |
+| Usar pestañas nativas (`NativeTabs`), vistas previas y menús en los links | No | Son funciones que la spec no pide (principio I) y suman complejidad (principio V). |
+| AsyncStorage está "deprecado"; usar `expo-sqlite/localStorage` | Seguimos con AsyncStorage | La documentación de SDK 58 lo muestra incluido en Expo Go; ya está en el plan y la constitución. Lo anotamos como mejora futura. |
+| Poner las rutas en `src/app/` | Seguimos con `app/` | La misma skill dice que no se reestructura un proyecto que ya tiene su organización. |
+
+Conclusión: las skills son útiles como referencia, pero **la constitución manda**. Lo dejamos
+escrito en `AGENTS.md` para que el agente lo respete.
 
 ### 4.3 Captura de la app base en el teléfono
 
@@ -381,6 +413,21 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   correctos) y en el iPhone se ven las dos pestañas y se puede pasar de una a otra.
 
   <img src="capturas/02-pestanias.png" alt="Pestañas Gastos y Resumen" width="250">
+
+### T03 — Instrucciones para el agente (`AGENTS.md` y `CLAUDE.md`)
+
+- **Prompt:** "listo" (continuar con la tarea T03 de `tasks.md`).
+- **Qué hizo la IA:** creó en la raíz del repositorio:
+  - [`AGENTS.md`](AGENTS.md): resumen de la constitución para cualquier agente (dónde está cada
+    cosa, las 6 reglas, convenciones de código y qué revisar antes de terminar una tarea).
+  - [`CLAUDE.md`](CLAUDE.md): una sola línea, `@AGENTS.md`. Claude Code lee `CLAUDE.md`
+    automáticamente y la `@` le indica que incluya el contenido de `AGENTS.md`. Así las reglas
+    están escritas una sola vez y sirven para cualquier agente.
+  - Además se instalaron 3 skills oficiales de Expo en `.claude/skills/` (ver 4.2).
+- **Qué corregimos / agregamos:** sumamos dos cosas que aprendimos en T01 y T02: que hay que usar
+  `npx expo start --tunnel` por la red Wi-Fi, y que `gestor-gastos/` tiene su propio `AGENTS.md`
+  de Expo que el agente también tiene que leer.
+- **Cómo lo verificamos:** comparamos `AGENTS.md` con la constitución, regla por regla.
 
 ---
 
