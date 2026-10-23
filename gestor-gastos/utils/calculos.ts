@@ -1,4 +1,4 @@
-import { Gasto } from '../types/gasto';
+import { CATEGORIAS, Categoria, Gasto } from '../types/gasto';
 import { hoy } from './formato';
 
 // Cálculos sobre la lista de gastos. Son funciones puras: no guardan ni leen datos,
@@ -20,4 +20,38 @@ export function totalDelMes(gastos: Gasto[]): number {
     }
   }
   return total;
+}
+
+// Una fila del resumen: cuánto se gastó en una categoría y qué parte del total es.
+export type ResumenCategoria = {
+  categoria: Categoria;
+  totalCentavos: number;
+  porcentaje: number; // redondeado a entero: 35 significa 35 %
+};
+
+// Total y porcentaje por categoría del mes actual, de mayor a menor (FR-010).
+// Solo aparecen las categorías que tienen gastos este mes.
+export function resumenPorCategoria(gastos: Gasto[]): ResumenCategoria[] {
+  const mes = mesActual();
+  const totalMes = totalDelMes(gastos);
+  const resumen: ResumenCategoria[] = [];
+
+  for (const categoria of CATEGORIAS) {
+    let total = 0;
+    for (const gasto of gastos) {
+      if (gasto.categoria === categoria && gasto.fecha.startsWith(mes)) {
+        total += gasto.montoCentavos;
+      }
+    }
+    if (total > 0) {
+      resumen.push({
+        categoria,
+        totalCentavos: total,
+        porcentaje: Math.round((total * 100) / totalMes),
+      });
+    }
+  }
+
+  // sort con (a, b) => b - a ordena de mayor a menor.
+  return resumen.sort((a, b) => b.totalCentavos - a.totalCentavos);
 }

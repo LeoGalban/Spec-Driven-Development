@@ -133,7 +133,7 @@
 
 **Prueba independiente**: escenarios 14 y 15 de [quickstart.md](quickstart.md).
 
-- [ ] T19 [P] [H5] Agregar `resumenPorCategoria(gastos: Gasto[])` a `utils/calculos.ts`: devuelve `{ categoria, totalCentavos, porcentaje }[]` solo de los gastos del mes actual, solo categorías con gastos, ordenado de mayor a menor total; `porcentaje` redondeado a entero.
+- [x] T19 [P] [H5] Agregar `resumenPorCategoria(gastos: Gasto[])` a `utils/calculos.ts`: devuelve `{ categoria, totalCentavos, porcentaje }[]` solo de los gastos del mes actual, solo categorías con gastos, ordenado de mayor a menor total; `porcentaje` redondeado a entero.
   - **Verificar**: `npx tsc --noEmit` sin errores (se ve en T20).
 - [ ] T20 [H5] Implementar `app/(tabs)/resumen.tsx`: carga con `obtenerGastos()` en `useFocusEffect`; estados `Cargando`, `MensajeError` con "Reintentar" y `MensajeVacio` con "No hay gastos este mes" (cuando `resumenPorCategoria` devuelve una lista vacía); si hay datos, el total del mes arriba y una fila por categoría con su total (`formatearPesos`) y porcentaje (`"35 %"`).
   - **Verificar**: escenarios 14, 15 y 17 de [quickstart.md](quickstart.md); sumar a mano los totales (SC-003).

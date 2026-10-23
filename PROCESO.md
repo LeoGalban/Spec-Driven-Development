@@ -773,6 +773,24 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   <img src="capturas/18-botones.png" alt="Botones Editar y Eliminar" width="250">
   <img src="capturas/18-confirmacion.png" alt="Confirmación para eliminar" width="250">
 
+### T19 — Resumen por categoría (`utils/calculos.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T19 de `tasks.md`).
+- **Qué hizo la IA:** agregó a [`utils/calculos.ts`](gestor-gastos/utils/calculos.ts) el tipo
+  `ResumenCategoria` y la función `resumenPorCategoria(gastos)`: para cada una de las 6
+  categorías suma los gastos del mes actual; si la suma es mayor a 0 la agrega con su porcentaje
+  sobre el total del mes (`Math.round(total * 100 / totalMes)`), y al final ordena de mayor a menor.
+- **Decisiones que revisamos:** los porcentajes se redondean a entero, como define
+  `data-model.md`. Por eso **pueden sumar 99 % o 101 %**: con los datos de ejemplo suman 101 %
+  (cada uno se redondea por separado). Lo aceptamos: lo que tiene que coincidir "al centavo"
+  (SC-003) son los **montos**, y esos sí suman exactamente el total del mes.
+- **Qué corregimos:** nada.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y, en la computadora, con los datos de
+  ejemplo: Comida $ 52.200,75 (41 %), Hogar $ 28.700,50 (23 %), Otros $ 15.000 (12 %), Salud
+  $ 12.450 (10 %), Transporte $ 10.000 (8 %), Ocio $ 9.000 (7 %). La suma de las categorías da
+  $ 127.351,25, igual a `totalDelMes`. Con la lista vacía devuelve `[]`. En el teléfono se ve en
+  T20.
+
 ---
 
 ## Registro de prompts generales
