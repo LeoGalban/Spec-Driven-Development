@@ -3,12 +3,10 @@
 **Instituto Politécnico Formosa** · Taller Complementario – React Native II
 **Actividad áulica N.° 1:** Desarrollo de una app móvil con React Native, Expo y Spec-Driven Development
 
-**Integrantes:**
-- Leonel Galban
-- _(compañero/a — a completar)_
+**Integrante:** Leonel Galban (trabajo individual)
 
 **Agente de IA utilizado:** Claude Code (extensión de VS Code)
-**Herramienta SDD:** _(a completar en la etapa 2)_
+**Herramienta SDD:** GitHub Spec Kit (`specify-cli` v1.2.4) con integración para Claude Code
 
 ---
 
@@ -38,7 +36,7 @@ Por eso una app de React Native se ve y se siente como nativa: los botones y las
 | **React Native** | Un código JS/TS que maneja componentes nativos | Un solo código, UI nativa, gran comunidad, recarga rápida | Algunas funciones muy específicas requieren código nativo; un poco menos de rendimiento en casos extremos (juegos 3D) |
 | **Híbrido web** (Ionic, PWA) | La app es una página web dentro de un navegador (WebView) o se instala desde el navegador | Se reutiliza conocimiento web (HTML/CSS); una PWA ni siquiera necesita tienda | No se siente 100 % nativa, peor rendimiento y acceso más limitado al hardware |
 
-**3 apps conocidas hechas con React Native** [4]: **Facebook** (partes de la app, como Marketplace), **Discord** (app móvil), **Shopify** (sus apps móviles). Otras: Microsoft Outlook, Coinbase.
+**3 apps conocidas hechas con React Native:** **Facebook Ads Manager** (de Meta) [4], **Shopify** (sus apps móviles, como Shop y Point of Sale) [4] y **Discord** (su app de iOS) [15]. Otras que figuran en la página oficial: Microsoft Outlook, Microsoft Teams y Amazon Shopping [4].
 
 ### 1.2 Expo
 
@@ -97,7 +95,7 @@ Un chat común (por ejemplo, ChatGPT en el navegador) solo **responde texto**: n
 Son archivos de texto en la raíz del proyecto que el agente **lee automáticamente al empezar**. Ahí se le explica el contexto: de qué trata el proyecto, qué tecnologías usamos, cómo correrlo, qué convenciones respetar (idioma, estilo, carpetas). Así no hay que repetírselo en cada pedido. `AGENTS.md` es un formato abierto que entienden varios agentes [12]; `CLAUDE.md` es el equivalente específico de Claude Code [11].
 
 **¿Qué son las skills y dónde se consiguen?**
-Una **skill** es un paquete de instrucciones (y a veces scripts) que le enseña al agente a hacer una tarea específica, como seguir buenas prácticas de Expo o crear un tipo de archivo. Es una carpeta con un archivo `SKILL.md`. El agente solo la carga cuando la tarea lo requiere, así no ocupa contexto de más [13].
+Una **skill** es un paquete de instrucciones (y a veces scripts) que le enseña al agente a hacer una tarea específica, como seguir buenas prácticas de Expo o crear un tipo de archivo. Es una carpeta con un archivo `SKILL.md`. El agente solo la carga cuando la tarea lo requiere, así no ocupa contexto de más [13]. Es un **formato abierto** (Agent Skills) que hoy entienden varios agentes, no solo Claude Code [16].
 Se consiguen en repositorios de GitHub de la comunidad y de las empresas (por ejemplo, el repositorio oficial `anthropics/skills`, o skills publicadas por equipos como el de Expo) y en catálogos de skills. Se instalan **copiando la carpeta** en `.claude/skills/` del proyecto o **instalando un plugin** desde el agente con el comando `/plugin` [13].
 
 ### 1.5 Mocks
@@ -127,31 +125,102 @@ export async function obtenerGastos() {
 3. React Native — About the New Architecture: https://reactnative.dev/architecture/landing-page
 4. React Native Showcase: https://reactnative.dev/showcase
 5. Documentación de Expo: https://docs.expo.dev/
-6. Expo Go: https://docs.expo.dev/get-started/expo-go/
+6. Expo — Set up your environment (Expo Go): https://docs.expo.dev/get-started/set-up-your-environment/
 7. Expo Router — Introducción: https://docs.expo.dev/router/introduction/
 8. Expo — Development builds: https://docs.expo.dev/develop/development-builds/introduction/
 9. GitHub Spec Kit: https://github.com/github/spec-kit
-10. Kiro: https://kiro.dev/
-11. Claude Code — Documentación: https://docs.claude.com/en/docs/claude-code/overview
+10. Kiro — Specs: https://kiro.dev/ y https://kiro.dev/docs/specs/
+11. Claude Code — Overview: https://code.claude.com/docs/en/overview
 12. AGENTS.md: https://agents.md/
-13. Agent Skills (Claude Code): https://docs.claude.com/en/docs/claude-code/skills y https://github.com/anthropics/skills
-14. AsyncStorage: https://react-native-async-storage.github.io/async-storage/
+13. Claude Code — Skills: https://code.claude.com/docs/en/skills y repositorio https://github.com/anthropics/skills
+14. Expo — AsyncStorage: https://docs.expo.dev/versions/latest/sdk/async-storage/ y repositorio https://github.com/react-native-async-storage/async-storage
+15. Discord Blog — How Discord achieves native iOS performance with React Native: https://discord.com/blog/how-discord-achieves-native-ios-performance-with-react-native
+16. Agent Skills (estándar abierto): https://agentskills.io/home
+
+> Todos los enlaces fueron verificados el 23/10/2026: abren correctamente y son páginas oficiales
+> de cada proyecto o empresa.
 
 ---
 
 ## 2. Especificación
 
+### 2.0 Instalación de la herramienta SDD
+
+Elegimos **GitHub Spec Kit** porque es de código abierto, funciona con Claude Code (el agente que
+usamos) y es la herramienta sugerida en la consigna.
+
+```powershell
+pip install --user uv                     # uv: instalador de herramientas de Python
+python -m uv tool install specify-cli --from git+https://github.com/github/spec-kit.git
+specify init --here --integration claude --ignore-agent-tools
+```
+
+- `specify init` creó la carpeta `.specify/` (plantillas, scripts y la constitución) y la carpeta
+  `.claude/skills/` con los comandos de Spec Kit para el agente: `/speckit-constitution`,
+  `/speckit-specify`, `/speckit-plan`, `/speckit-tasks`, `/speckit-implement`, etc.
+- **Problema encontrado:** la primera vez falló con *"claude not found"*, porque usamos Claude Code
+  como extensión de VS Code y no como comando de terminal. Se resolvió con la opción
+  `--ignore-agent-tools`, que saltea esa verificación.
+
 ### 2.1 Idea original
-_(pendiente)_
+
+> "Una app para anotar mis gastos del día a día: ver la lista de lo que gasté, ver el detalle de
+> cada gasto, cargar uno nuevo con un formulario que valide los datos, editarlo o borrarlo, y ver
+> cuánto gasté por categoría en el mes."
+
+Elegimos un **gestor de gastos personales** porque cumple naturalmente con los requisitos de la
+consigna: tiene un listado con detalle, un formulario donde la validación tiene sentido (montos,
+fechas) y se puede hacer sin backend.
 
 ### 2.2 Reglas del proyecto (constitution)
-_(pendiente)_
+
+Archivo: [`.specify/memory/constitution.md`](.specify/memory/constitution.md). Resumen de los 6
+principios:
+
+1. **La spec manda:** no se programa nada que no esté en la spec y en una tarea.
+2. **Stack fijo, sin backend:** Expo + React Native + TypeScript + expo-router; solo librerías
+   compatibles con Expo Go.
+3. **Los datos viven en `services/`:** funciones `async` con 500–1000 ms de latencia simulada.
+4. **Carga, vacío y error** en toda pantalla con datos.
+5. **Simple y explicable:** sin librerías extra; `useState`/`useEffect` y `StyleSheet`.
+6. **Una tarea, un commit, probada en el teléfono.**
+
+Convenciones: código y comentarios **en español** (sin tildes en los nombres), moneda en pesos
+argentinos.
 
 ### 2.3 Prompts usados para generar la spec
-_(pendiente)_
+
+| Paso | Prompt |
+|---|---|
+| Constitución (`/speckit-constitution`) | "Stack fijo: Expo + expo-router + TypeScript, sin backend, datos mock en `services/` con latencia de 500–1000 ms, AsyncStorage para persistencia, debe correr en Expo Go. Código y comentarios en español. Una tarea = un commit. Toda pantalla maneja carga, vacío y error. Código simple que podamos explicar línea por línea." |
+| Especificación (`/speckit-specify`) | "Gestor de gastos personales. Una app para anotar mis gastos del día a día: ver la lista de lo que gasté, ver el detalle de cada gasto, cargar uno nuevo con un formulario que valide los datos, editarlo o borrarlo, y ver cuánto gasté por categoría en el mes. Mínimo 4 pantallas con expo-router. Sin usuarios ni backend." |
+
+Spec Kit generó:
+- [`specs/001-gestor-gastos/spec.md`](specs/001-gestor-gastos/spec.md): 5 historias de usuario con
+  prioridad (P1–P3), criterios de aceptación *Dado / Cuando / Entonces*, 14 requisitos
+  funcionales, tabla de pantallas, sección **Fuera de alcance** y criterios de éxito medibles.
+- [`specs/001-gestor-gastos/checklists/requirements.md`](specs/001-gestor-gastos/checklists/requirements.md):
+  checklist de calidad de la spec.
 
 ### 2.4 Qué corregimos de lo que propuso la IA
-_(pendiente)_
+
+Decisiones que tomamos para **recortar** y **concretar** la spec:
+
+- **Recortamos alcance:** quedaron explícitamente fuera los gráficos, presupuestos, ingresos,
+  búsqueda/filtros, categorías personalizadas, varias monedas, exportar datos y modo oscuro. Son
+  ideas típicas de una app de gastos, pero no las pide la consigna y alargan el trabajo.
+- **Reglas de validación concretas (FR-006):** "validar el formulario" era muy vago. Lo
+  reemplazamos por reglas que se pueden probar una por una (descripción 3–50 caracteres, monto
+  mayor a 0 con hasta 2 decimales, fecha no futura, etc.).
+- **Categorías fijas (FR-007):** 6 categorías cerradas, para no tener que hacer una pantalla de
+  administración de categorías.
+- **Estado de error demostrable:** agregamos un supuesto para poder *forzar* un error en la demo,
+  porque si el mock nunca falla no hay forma de mostrar el estado de error.
+- **Datos de ejemplo (FR-012):** al menos 10 gastos de 2 meses distintos, para poder probar que el
+  total del mes solo suma el mes actual.
+
+> ✏️ **Revisión personal:** _(completar al leer la spec: qué cambié a mano, qué me pareció que
+> sobraba o faltaba, y qué observaciones hicieron los docentes al aprobarla)._
 
 ---
 
@@ -192,6 +261,7 @@ _(pendiente)_
 |---|---|---|
 | 0 | "quiero que me hagas este trabajo de una forma fácil para que yo pueda entenderlo y luego explicarle a mis profesores [...]" + PDF de la consigna | La IA propuso un plan por etapas, clonó el repositorio y creó la estructura de este documento. |
 | 1 | "quiero que vos hagas todo y me digas cuándo tengo que hacer commit" | La IA redactó un borrador de la investigación con fuentes. Lo revisamos y reescribimos con nuestras palabras. |
+| 2 | "siguiente" (continuar con la etapa 2) + los prompts de la sección 2.3 | La IA instaló Spec Kit, escribió la constitución y generó la spec. |
 
 ---
 
