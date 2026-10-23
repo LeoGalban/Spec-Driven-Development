@@ -489,6 +489,35 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   23/10/2026). En todas: 12 gastos, 7 del mes actual, 0 fechas futuras, 6 categorías, ids sin
   repetir. Esta tarea no cambia nada visible en el teléfono; se ve funcionando en T07.
 
+### T07 — Servicio de gastos con AsyncStorage (`services/gastos.ts`)
+
+- **Prompt:** "listo" (continuar con la tarea T07 de `tasks.md`).
+- **Qué hizo la IA:**
+  1. Instaló AsyncStorage con `npx expo install @react-native-async-storage/async-storage`.
+  2. Creó [`services/gastos.ts`](gestor-gastos/services/gastos.ts) con las 5 funciones del
+     [contrato](specs/001-gestor-gastos/contracts/servicio-gastos.md): `obtenerGastos`,
+     `obtenerGasto`, `crearGasto`, `actualizarGasto` y `eliminarGasto`. Todas esperan 500–1000 ms y
+     pueden fallar (`simularError`). La lista se guarda como JSON en una sola clave, `gastos`; si la
+     clave no existe se cargan los datos de ejemplo.
+- **Qué salió mal y cómo se resolvió:** la instalación falló con `npm error ERESOLVE`. Causa:
+  `react-dom` (que expo-router usa para la versión web) publicó la versión 19.3.1, que exige
+  `react` 19.3.1, pero Expo SDK 58 fija `react` en 19.3.0. Solución: fijar `react-dom` en la
+  versión del SDK con `npx expo install react-dom @react-native-async-storage/async-storage`
+  (queda `react-dom` 19.3.0). Después `npx expo-doctor` pasó los 20 controles. Como se agregaron
+  paquetes, hubo que reiniciar Expo con `npx expo start --tunnel -c`.
+- **Qué corregimos / agregamos:** `crearGasto` agrega el gasto nuevo **al principio** de la lista,
+  así entre gastos con la misma fecha el más nuevo aparece primero (lo pide la prueba de la
+  Historia 3: "el gasto aparece primero en la lista").
+- **Cómo lo verificamos:**
+  1. En la computadora, con un AsyncStorage simulado: la primera carga trae 12 gastos ordenados
+     (tardó 757 ms); crear → 13 y el nuevo queda primero; editar cambia la descripción; eliminar →
+     12 y buscarlo devuelve `null`; editar un id inexistente da "No se encontró el gasto"; borrar
+     todo → 0, y **los ejemplos no vuelven** (supuesto de la spec).
+  2. En el teléfono, prueba temporal en la pantalla Gastos (se ve "Cargando…" y después la
+     cantidad; luego se borró):
+
+  <img src="capturas/07-servicio-gastos.png" alt="Gastos cargados: 12" width="250">
+
 ---
 
 ## Registro de prompts generales
