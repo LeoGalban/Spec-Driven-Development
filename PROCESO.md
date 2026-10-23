@@ -724,6 +724,35 @@ App base de la plantilla corriendo en un iPhone con Expo Go (SDK 58), en modo t�
   <img src="capturas/16-validacion.png" alt="Mensajes de validación" width="200">
   <img src="capturas/16-gasto-guardado.png" alt="Gasto guardado en la lista" width="200">
 
+### T17 — Editar un gasto (mismo formulario, modo edición)
+
+- **Prompt:** "listo" (continuar con la tarea T17 de `tasks.md`).
+- **Qué hizo la IA:**
+  - En [`app/gasto/formulario.tsx`](gestor-gastos/app/gasto/formulario.tsx): lee un `id`
+    opcional de la ruta (`/gasto/formulario?id=...`). Si lo hay, el título pasa a "Editar gasto"
+    (con `<Stack.Screen options>` dentro de la pantalla), trae el gasto con `obtenerGasto`,
+    completa los campos (`centavosATexto`, `fechaAMostrar`) y al guardar llama a
+    `actualizarGasto` en vez de `crearGasto`. Mientras carga muestra `Cargando`; si falla,
+    `MensajeError` con "Reintentar"; si no existe, "No se encontró el gasto".
+  - En [`app/gasto/[id].tsx`](gestor-gastos/app/gasto/[id].tsx): botón "Editar" que abre el
+    formulario con el id del gasto.
+- **Decisiones que revisamos:**
+  - **Un solo formulario para los dos modos** (FR-008: "el mismo formulario y las mismas
+    validaciones"): no se duplica código.
+  - El gasto a editar se carga con `useEffect` (una vez, al abrir) y **no** con `useFocusEffect`:
+    si se recargara al volver a la pantalla, se borraría lo que el usuario ya había cambiado.
+  - Después de guardar, `router.back()` vuelve al detalle, que se actualiza solo gracias a su
+    `useFocusEffect` (T12).
+- **Qué corregimos:** al agregar el código del modo edición la sangría del formulario quedó
+  desalineada; se acomodó con Prettier (`npx prettier --single-quote --print-width 100`), el
+  formateador que usa Expo.
+- **Cómo lo verificamos:** `npx tsc --noEmit` sin errores y escenario 11 de `quickstart.md`: se
+  editó "Crossfit" de $ 50.000 a $ 45.000; el formulario se abrió con todos los datos (incluida la
+  categoría marcada) y al guardar el detalle mostró el monto nuevo.
+
+  <img src="capturas/17-editar.png" alt="Formulario en modo edición" width="250">
+  <img src="capturas/17-detalle-editado.png" alt="Detalle actualizado" width="250">
+
 ---
 
 ## Registro de prompts generales

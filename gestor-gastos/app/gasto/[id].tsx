@@ -1,6 +1,6 @@
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Cargando from '../../components/Cargando';
 import MensajeError from '../../components/MensajeError';
@@ -66,6 +66,14 @@ export default function PantallaDetalle() {
         {/* La nota es opcional: solo se muestra si tiene texto */}
         {gasto.nota !== '' && <Dato etiqueta="Nota" valor={gasto.nota} />}
       </View>
+
+      {/* Abre el mismo formulario de "Agregar", pero con el id: así sabe que tiene que editar */}
+      <Pressable
+        style={styles.boton}
+        onPress={() => router.push({ pathname: '/gasto/formulario', params: { id: gasto.id } })}
+      >
+        <Text style={styles.textoBoton}>Editar</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -116,5 +124,17 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontSize: 16,
     color: '#222',
+  },
+  boton: {
+    marginTop: 24,
+    backgroundColor: '#007AFF',
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  textoBoton: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '600',
   },
 });

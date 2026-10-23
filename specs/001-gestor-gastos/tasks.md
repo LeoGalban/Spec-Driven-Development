@@ -120,7 +120,7 @@
 
 **Prueba independiente**: escenarios 11–13 de [quickstart.md](quickstart.md).
 
-- [ ] T17 [H4] Agregar el **modo edición** a `app/gasto/formulario.tsx`: si recibe `id` (con `useLocalSearchParams`), el título es "Editar gasto" (`Stack.Screen options`), carga el gasto con `obtenerGasto(id)` mostrando `Cargando` / `MensajeError` / "No se encontró el gasto", completa los campos (`centavosATexto`, `fechaAMostrar`) y al guardar llama a `actualizarGasto(id, datos)`. En `app/gasto/[id].tsx` agregar el botón "Editar" con `router.push(`/gasto/formulario?id=${id}`)`.
+- [x] T17 [H4] Agregar el **modo edición** a `app/gasto/formulario.tsx`: si recibe `id` (con `useLocalSearchParams`), el título es "Editar gasto" (`Stack.Screen options`), carga el gasto con `obtenerGasto(id)` mostrando `Cargando` / `MensajeError` / "No se encontró el gasto", completa los campos (`centavosATexto`, `fechaAMostrar`) y al guardar llama a `actualizarGasto(id, datos)`. En `app/gasto/[id].tsx` agregar el botón "Editar" con `router.push(`/gasto/formulario?id=${id}`)`.
   - **Verificar**: escenario 11 de [quickstart.md](quickstart.md); el detalle muestra los datos nuevos al volver (gracias a `useFocusEffect`).
 - [ ] T18 [H4] En `app/gasto/[id].tsx` agregar el botón "Eliminar": `Alert.alert('¿Eliminar este gasto?', …)` con "Cancelar" y "Eliminar" (estilo `destructive`); al confirmar llama a `eliminarGasto(id)` y vuelve con `router.back()`.
   - **Verificar**: escenarios 12, 13 y 17 de [quickstart.md](quickstart.md).
